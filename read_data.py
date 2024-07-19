@@ -54,9 +54,28 @@ def choose_index(data: pd.DataFrame) -> str:
             raise Exception("Column name does not exist in the dataframe")
         if not data[column_name].is_unique:
             raise Exception("Column is not unique")
+        if not data[column_name].dtype in [int, float, str]:
+            raise Exception("Column type is not string or numeric")
         return column_name
     except TypeError as error:
         print("Invalid type:", type(error), error)
     except Exception as error:
         print("Error:", type(error), error)
 
+
+def sort_data(data: pd.DataFrame, key: str) -> pd.DataFrame:
+    '''
+    Function sort_data
+    This function sorts the data by the user chosen index column.
+    Parameters:
+    data -- the dataframe of the data
+    key -- the name of the column that is set as index
+    Returns the sorted dataframe.
+    '''
+    try:
+        data = data.sort_values(key)
+        return data
+    except KeyError as error:
+        print("Key error:", type(error), error)
+    except Exception as error:
+        print("Error:", type(error), error)
