@@ -1,5 +1,14 @@
+'''
+Siyun He
+CS 5800, Summer 2024
+Final Project: data generation.py
+
+This program read in a CS5800 student name data. Randomly generates grade between 90 and 100, and assign letter grade according to the numeric grade. Then save it to an excel file.
+'''
 import pandas as pd
 import numpy as np
+
+
 # import excel file
 df = pd.read_excel('data.xlsx')
 # create a new column with column name 'grade', and randomly assign a grade between 90 to 100 to each student

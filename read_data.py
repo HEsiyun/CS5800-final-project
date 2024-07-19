@@ -9,6 +9,7 @@ The program will check whether the file exists and whether the file is in the co
 import pandas as pd
 import sys
 
+
 def read_in_data() -> pd.DataFrame:
     '''
     Function read_in_data
