@@ -1,5 +1,5 @@
 from read_data import read_in_data, choose_index, sort_data, add_row_number
-from b_tree import BTree, BTreeNode, choose_max_degree
+from b_tree_v0 import BTree, BTreeNode, choose_max_degree
 import pandas as pd
 
     
@@ -37,7 +37,16 @@ def insert_driver():
             print('-'*50)
         # visualize the tree
         btree.visualize()
-
+        # ask user if they want to insert more keys
+        while True:
+            try:
+                choice = input("Do you want to insert more keys? (y/n): ")
+                if choice not in ['y', 'n']:
+                    raise ValueError("Invalid choice")
+                break
+            except ValueError as error:
+                print("Invalid value:", error)
+    
 
 insert_driver()
 
