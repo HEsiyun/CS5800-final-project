@@ -1,6 +1,17 @@
 import matplotlib.pyplot as plt
 import networkx as nx
-#B = input("Please enter the branching factor: ")
+
+def choose_max_degree(df_length: int) -> int:
+    while True:
+        try:
+            max_degree = int(input("Enter the maximum degree of the B tree: "))
+            if max_degree < 2:
+                raise ValueError("Degree must be greater than 1")
+            if max_degree >= df_length:
+                raise ValueError("Degree must be less than the number of rows in the dataframe")
+            return max_degree
+        except ValueError as error:
+            print("Invalid value:", error)
 
 # B tree node class
 # Even max degree only
@@ -39,10 +50,6 @@ class BTree:
             while i < len(x.keys) and k > x.keys[i]:
                 i += 1
 
-            # Ensure that the child node exists before trying to access it
-            if i >= len(x.child):
-                x.child.append(BTreeNode(x.leaf))
-
             # Split the child if it is full
             if len(x.child[i].keys) == (2 * self.t) - 1:
                 self.split_child(x, i)
@@ -56,18 +63,18 @@ class BTree:
 
     def split_child(self, x, i):
         t = self.t
-        y = x.child[i]
-        z = BTreeNode(y.leaf)
-        x.child.insert(i + 1, z)
-        x.keys.insert(i, y.keys[t - 1])
+        left_child = x.child[i]
+        right_child = BTreeNode(left_child.leaf)
+        x.child.insert(i + 1, right_child)
+        x.keys.insert(i, left_child.keys[t - 1])
 
         # Split the keys and children of y into y and z
-        z.keys = y.keys[t: (2 * t) - 1]
-        y.keys = y.keys[:t - 1]
+        right_child.keys = left_child.keys[t: (2 * t) - 1]
+        left_child.keys = right_child.keys[:t - 1]
 
-        if not y.leaf:
-            z.child = y.child[t:]
-            y.child = y.child[:t]
+        if not left_child.leaf:
+            right_child.child = left_child.child[t:]
+            left_child.child = left_child.child[:t]
 
     # Print the tree
     def print_tree(self, x, l=0, prefix=""):
@@ -121,7 +128,7 @@ class BTree:
 def main():
     B = BTree(2)
 
-    for i in range(15):
+    for i in range(30):
         B.insertion((i, 2 * i))
         B.print_tree(B.root)
         print('-'*50)

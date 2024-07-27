@@ -7,6 +7,7 @@ This program read in a CS5800 student name data. Randomly generates grade betwee
 '''
 import pandas as pd
 import numpy as np
+import uuid
 
 
 # import excel file
@@ -17,6 +18,6 @@ df['grade'] = np.random.randint(90, 101, df.shape[0])
 # create a new column and assign a grade based on the following conditions: grade <= 93: "A-", grade <= 96: "A", grade <= 100: "A+", ensure the column name is 'grade_letter'
 df['grade_letter'] = df['grade'].apply(lambda x: "A-" if x <= 93 else "A" if x <= 96 else "A+")
 # generate a unique student ID for each student, and add it to the dataframe as the first column
-df.insert(0, 'student_ID', range(1, 1 + len(df)))
+df.insert(0, 'student_ID', range(1, len(df) + 1))
 # save the dataframe to a new excel file
 df.to_excel('data_with_grade.xlsx', index=False)

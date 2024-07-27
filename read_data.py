@@ -79,3 +79,17 @@ def sort_data(data: pd.DataFrame, key: str) -> pd.DataFrame:
         print("Key error:", type(error), error)
     except Exception as error:
         print("Error:", type(error), error)
+
+def add_row_number(data: pd.DataFrame) -> pd.DataFrame:
+    '''
+    Function add_row_number
+    This function adds a row number to the dataframe as a column.
+    Parameters:
+    data -- the dataframe of the data
+    Returns the dataframe with row number.
+    '''
+    try:
+        data['row_number'] = range(1, len(data) + 1)
+        return data
+    except Exception as error:
+        print("Error:", type(error), error)
