@@ -79,6 +79,13 @@ def sort_data(data: pd.DataFrame, key: str) -> pd.DataFrame:
         print("Key error:", type(error), error)
     except Exception as error:
         print("Error:", type(error), error)
+    # if the key column is numeric type, convert it to int
+    if data[key].dtype in [int, float]:
+        data[key] = data[key].astype(int)
+    # if the key column is string type, convert it to a int column
+    if data[key].dtype == str:
+        data[key] = pd.factorize(data[key])[0]
+
 
 def add_row_number(data: pd.DataFrame) -> pd.DataFrame:
     '''
@@ -90,6 +97,8 @@ def add_row_number(data: pd.DataFrame) -> pd.DataFrame:
     '''
     try:
         data['row_number'] = range(1, len(data) + 1)
+        if data['row_number'].dtype in [int, float]:
+            data['row_number'] = data['row_number'].astype(int)
         return data
     except Exception as error:
         print("Error:", type(error), error)
