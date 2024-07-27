@@ -4,13 +4,17 @@ import pandas as pd
 
 def main():
     data = read_in_data()
+    # #print data type of each column
+    # print(data.dtypes)
+    # print(data['student_ID'].dtype)
     key = choose_index(data)
     data = sort_data(data, key)
     data = add_row_number(data)
-    # store row_number and key in a list of tuples
-    keys = list(zip(data['row_number'], data[key]))
-   #print(type(keys))
-    
+
+    # store row_number and key in a list of tuples, put key in the first element of the tuple
+    keys = list(zip(data[key], data['row_number']))
+    print(keys)
+    # get the max degree of the BTree
     t = choose_max_degree(data.shape[0])
     
     #create a BTree object

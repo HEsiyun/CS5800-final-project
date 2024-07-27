@@ -12,6 +12,8 @@ import uuid
 
 # import excel file
 df = pd.read_excel('data.xlsx')
+# convert the student_name column to string type
+df['student_name'] = df['student_name'].astype(str)
 # create a new column with column name 'grade', and randomly assign a grade between 90 to 100 to each student
 np.random.seed(8)
 df['grade'] = np.random.randint(90, 101, df.shape[0])

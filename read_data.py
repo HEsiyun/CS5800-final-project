@@ -7,6 +7,7 @@ This program reads data from an excel file by taking user input filepath and fil
 The program will check whether the file exists and whether the file is in the correct format. Also, it will check whether the column is unique, has correct type and exists in the dataframe.
 '''
 import pandas as pd
+import numpy as np
 import sys
 
 
@@ -24,6 +25,7 @@ def read_in_data() -> pd.DataFrame:
     
     try:
         data = pd.read_excel(filepath)
+        data = data.convert_dtypes()
         return data
     except FileNotFoundError as error:
         print("File not found:", type(error), error)
@@ -54,7 +56,8 @@ def choose_index(data: pd.DataFrame) -> str:
             raise Exception("Column name does not exist in the dataframe")
         if not data[column_name].is_unique:
             raise Exception("Column is not unique")
-        if not data[column_name].dtype in [int, float, str]:
+        # check if the column pandas dataframe type is string or numeric
+        if not (pd.api.types.is_string_dtype(data[column_name].dtype) or pd.api.types.is_numeric_dtype(data[column_name].dtype)):
             raise Exception("Column type is not string or numeric")
         return column_name
     except TypeError as error:
@@ -79,13 +82,8 @@ def sort_data(data: pd.DataFrame, key: str) -> pd.DataFrame:
         print("Key error:", type(error), error)
     except Exception as error:
         print("Error:", type(error), error)
-    # if the key column is numeric type, convert it to int
-    if data[key].dtype in [int, float]:
-        data[key] = data[key].astype(int)
-    # if the key column is string type, convert it to a int column
-    if data[key].dtype == str:
-        data[key] = pd.factorize(data[key])[0]
-
+   
+ 
 
 def add_row_number(data: pd.DataFrame) -> pd.DataFrame:
     '''
