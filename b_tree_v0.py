@@ -52,7 +52,11 @@ class BTree:
             # Find the position to insert the new key
             while i < len(x.keys) and k > x.keys[i]:
                 i += 1
-            x.keys.insert(i, k)  # Insert the key at the found position
+            if i == len(x.keys) or k != x.keys[i]:
+                x.keys.insert(i, k)  # Insert the key at the found position
+            else:
+                # If the key is already in the tree, we can update the value
+                x.keys[i] = k
         else:
             # Find the child which is going to have the new key
             while i < len(x.keys) and k > x.keys[i]:
