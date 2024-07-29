@@ -3,6 +3,13 @@ from b_tree_v0 import BTree, BTreeNode, choose_max_degree
 import pandas as pd
 
 def search_driver(data, btree):
+    '''
+    Function search_driver
+    This function searches for a key in the BTree and displays the row in the dataframe that contains the key.
+    Parameters:
+    data -- the dataframe of the data
+    btree -- the BTree object
+    '''
     search_value = input("Enter the key you want to search: ")
     result = btree.search_key(search_value)
     if result is not None:
@@ -17,6 +24,11 @@ def search_driver(data, btree):
     print(row)
 
 def import_driver():
+    '''
+    Function import_driver
+    This function imports the data from a file and creates a BTree object.
+    Returns the dataframe of the data, the BTree object, and the user defined key.
+    '''
     data = read_in_data()
     user_defined_key = choose_index(data)
     data = add_row_number(data)
@@ -39,6 +51,14 @@ def import_driver():
     return data, btree, user_defined_key
 
 def insert_driver(data, user_defined_key):
+    '''
+    Function insert_driver
+    This function inserts a new row into the dataframe and the BTree.
+    Parameters:
+    data -- the dataframe of the data
+    user_defined_key -- the user defined key
+    Returns the updated dataframe, the new key, and the row number.
+    '''
     new_key = input("Enter the key you want to insert: ")
     # set the row number to be the last row number + 1
     if data.empty:
@@ -62,6 +82,10 @@ def insert_driver(data, user_defined_key):
     return data, new_key, row_number
 
 def mini_database():
+    ''' 
+    Function mini_database
+    This function is the main function that runs the mini database.
+    '''
     # ask the user whether to read in the data from a file or generate the data
     while True:
         try:
@@ -84,10 +108,6 @@ def mini_database():
             except ValueError as error:
                 print("Invalid value:", error)
 
-        # choice_search_or_insert = input("Do you want to insert more keys or search for a key? (1 to insert, 2 to search): ")
-        # while choice_search_or_insert not in ['1', '2']:
-        #     choice_search_or_insert = input("Invalid choice. Do you want to insert more keys or search for a key? (1 to insert, 2 to search): ")
-        # if choice_search_or_insert == '1':
             if crud_choice == '1':
                 data, new_key, row_number = insert_driver(data, user_defined_key)
                 # Display the new dataframe
@@ -121,12 +141,6 @@ def mini_database():
         while True:
             try:
                 crud_choice = input("Do you want to insert, search, update, delete or exit? (1 to insert, 2 to search, 3 to delete, 4 to exit): ")
-                # if crud_choice not in ['1', '2', '3', '4', '5']:
-                #     raise ValueError("Invalid choice")
-                # if crud_choice == '2' and btree is None:
-                #     raise ValueError("BTree object has not been created")
-                # if crud_choice == '3' and btree is None:
-                #     raise ValueError("BTree object has not been created")
             except ValueError as error:
                 print("Invalid value:", error)
 

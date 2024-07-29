@@ -15,8 +15,6 @@ def choose_max_degree(df_length: int) -> int:
             max_degree = int(input("Enter the maximum degree of the B tree, please choose an even number larger than 3: "))
             if max_degree < 4:
                 raise ValueError("Degree must be greater than 3")
-            # if max_degree >= df_length:
-            #     raise ValueError("Degree must be less than the number of rows in the dataframe")
             return int(max_degree / 2) # Convert to minimum degree
         except ValueError as error:
             print("Invalid value:", error)
@@ -24,17 +22,37 @@ def choose_max_degree(df_length: int) -> int:
 # B tree node class
 # Even max degree only
 class BTreeNode:
+    '''
+    Class BTreeNode
+    This class represents a node in the B tree.
+    '''
     def __init__(self, leaf=False):
         self.leaf = leaf
         self.keys = []  # This will store tuples
         self.child = []
 
 class BTree:
+    '''
+    class Btree
+    This class represents a B tree. It has the following attributes: root and minimum degree. The class has the following methods:
+    - insertion: insert a key into the B tree
+    - insert_non_full: insert a key into a non-full node
+    - split_child: split a child node
+    - search_key: search for a key in the B tree
+    - print_tree: print the B tree
+    - visualize: visualize the B tree
+    '''
     def __init__(self, t):
         self.root = BTreeNode(True)  # Initially, root should be a leaf
         self.t = t  # Minimum degree
 
     def insertion(self, k):
+        '''
+        Function insertion
+        This function inserts a key into the B tree.
+        Parameters:
+        k -- the key to be inserted
+        '''
         root = self.root
         if len(root.keys) == (2 * self.t) - 1:  # If root is full, split it
             temp = BTreeNode(False)
@@ -46,17 +64,20 @@ class BTree:
             self.insert_non_full(root, k)
 
     def insert_non_full(self, x, k):
+        '''
+        Function insert_non_full
+        This function inserts a key into a non-full node.
+        Parameters:
+        x -- the node to insert the key
+        k -- the key to be inserted
+        '''
         i = 0  # Start from the beginning of the keys list
 
         if x.leaf:
             # Find the position to insert the new key
             while i < len(x.keys) and k > x.keys[i]:
                 i += 1
-            # if i == len(x.keys) or k != x.keys[i]:
             x.keys.insert(i, k)  # Insert the key at the found position
-            # else:
-            #     # If the key is already in the tree, we can update the value
-            #     x.keys[i] = k
         else:
             # Find the child which is going to have the new key
             while i < len(x.keys) and k > x.keys[i]:
@@ -74,6 +95,13 @@ class BTree:
             self.insert_non_full(x.child[i], k)
 
     def split_child(self, x, i):
+        '''
+        Function split_child
+        This function splits a child node.
+        Parameters:
+        x -- the parent node
+        i -- the index of the child to split
+        '''
         t = self.t
         left_child = x.child[i]
         right_child = BTreeNode(left_child.leaf)
@@ -89,7 +117,14 @@ class BTree:
             left_child.child = left_child.child[:t]
             
     def search_key(self, k, x=None):
-        """Search for a key in the B-tree and return the node and index of the key if found."""
+        '''
+        Function search_key
+        This function searches for a key in the B tree.
+        Parameters:
+        k -- the key to search
+        x -- the node to start the search from
+        Returns the node and index of the key if found, otherwise None.
+        '''
         if x is None:
             x = self.root  # Start from the root if no node is provided
         i = 0
@@ -108,7 +143,14 @@ class BTree:
 
     # Print the tree
     def print_tree(self, x, l=0, prefix=""):
-        """Print a structured representation of the B-tree."""
+        '''
+        Function print_tree
+        This function prints the B tree.
+        Parameters:
+        x -- the node to start printing from
+        l -- the level of the node
+        prefix -- the prefix to print before the node
+        '''
         if l == 0:
             print("Root:", end=" ")
         else:
@@ -129,6 +171,10 @@ class BTree:
                 self.print_tree(child, l + 1, child_prefix)
 
     def visualize(self):
+        '''
+        Function visualize
+        This function visualizes the B tree.
+        '''
         def add_edges(graph, node, pos, x=0, y=0, level=1, width=1.0):
             if node is not None:
                 pos[node] = (x, y)
