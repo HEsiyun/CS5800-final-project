@@ -13,6 +13,7 @@ def insert_driver():
             break
         except ValueError as error:
             print("Invalid value:", error)
+    
     if choice == 1:
         data = read_in_data()
         user_defined_key = choose_index(data)
@@ -29,8 +30,9 @@ def insert_driver():
         # insert the keys into the BTree
         for key in keys:
             btree.insertion(key)
+        
         # print the tree
-            btree.print_tree(btree.root)
+        btree.print_tree(btree.root)
         # visualize the tree
         btree.visualize()
        

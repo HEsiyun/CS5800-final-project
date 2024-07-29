@@ -94,7 +94,7 @@ def add_row_number(data: pd.DataFrame) -> pd.DataFrame:
     Returns the dataframe with row number.
     '''
     try:
-        data['row_number'] = range(1, len(data) + 1)
+        data['row_number'] = range(0, len(data))
         if data['row_number'].dtype in [int, float]:
             data['row_number'] = data['row_number'].astype(int)
         return data

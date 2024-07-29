@@ -138,13 +138,13 @@ class BTree:
         plt.show()
 
 
-def main():
-    B = BTree(2)
+# def main():
+#     B = BTree(2)
 
-    for i in range(30):
-        B.insertion((i, 2 * i))
-        B.print_tree(B.root)
-        print('-'*50)
-    # B.visualize()
-if __name__ == '__main__':
-    main()
+#     for i in range(30):
+#         B.insertion((i, 2 * i))
+#         B.print_tree(B.root)
+#         print('-'*50)
+#     # B.visualize()
+# if __name__ == '__main__':
+#     main()
