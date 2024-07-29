@@ -15,13 +15,12 @@ def insert_driver():
             print("Invalid value:", error)
     if choice == 1:
         data = read_in_data()
-        key = choose_index(data)
+        user_defined_key = choose_index(data)
         #data = sort_data(data, key)
         data = add_row_number(data)
 
         # store row_number and key in a list of tuples, put key in the first element of the tuple
-        keys = list(zip(data[key], data['row_number']))
-        print(keys)
+        keys = list(zip(data[user_defined_key], data['row_number']))
         # get the max degree of the BTree
         t = choose_max_degree(data.shape[0])
         
@@ -30,9 +29,8 @@ def insert_driver():
         # insert the keys into the BTree
         for key in keys:
             btree.insertion(key)
-            # print the tree
-            btree.print_tree(btree.root)
-            print('-'*50)
+        # print the tree
+        btree.print_tree(btree.root)
         # visualize the tree
         btree.visualize()
        
@@ -49,34 +47,30 @@ def insert_driver():
             if choice == 'y':
                 new_key = input("Enter the key you want to insert: ")
                 # set the row number to be the last row number + 1
-                # row_number = data['row_number'].max() + 1
-                # add the key to the dataframe
-                # check if the key is unique
-                if new_key in data[key].values:
-                    print("Key already exists in the dataframe")
-                    continue
-                # ask the user to input value for all the columns in the dataframe other than the key column
+                row_number = data['row_number'].max() + 1
+                # ask the user to input value for all the columns in the dataframe except the key column and row_number column
                 column_name = data.columns.tolist()
-                #column_name.remove(key)
+                column_name.remove(user_defined_key)
+                column_name.remove('row_number')
                 values = []
                 for column in column_name:
                     value = input(f"Enter the value for {column}: ")
                     values.append(value)
 
                 # add the new row to the end of the dataframe
-                new_row = pd.DataFrame({key: [key], 'row_number': [row_number]})
+                new_row = pd.DataFrame({user_defined_key: [new_key], 'row_number': [row_number]})
                 for i in range(len(column_name)):
                     new_row[column_name[i]] = values[i]
                 data = data.append(new_row, ignore_index=True)
                 # Display the new dataframe
                 print(data)
                 # update the keys list
-                keys.append((key, row_number))
+                # keys.append((new_key, row_number))
                 # insert the new key into the BTree
-                # btree.insertion((key, row_number))
-                # btree.print_tree(btree.root)
-                # print('-'*50)
-                # btree.visualize()
+                btree.insertion((new_key, row_number))
+                btree.print_tree(btree.root)
+                print('-'*50)
+                btree.visualize()
             else:
                 break
 
