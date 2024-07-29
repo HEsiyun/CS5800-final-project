@@ -17,7 +17,6 @@ def insert_driver():
     if choice == 1:
         data = read_in_data()
         user_defined_key = choose_index(data)
-        #data = sort_data(data, key)
         data = add_row_number(data)
 
         # store row_number and key in a list of tuples, put key in the first element of the tuple
@@ -36,45 +35,59 @@ def insert_driver():
         # visualize the tree
         btree.visualize()
        
-        # ask user if they want to insert more keys
-        while True:
-            try:
-                choice = input("Do you want to insert more keys? (y/n): ")
-                if choice not in ['y', 'n']:
-                    raise ValueError("Invalid choice")
-            except ValueError as error:
-                print("Invalid value:", error)
+        # ask user if they want to insert more keys or search for a key
+        choice_search_or_insert = input("Do you want to insert more keys or search for a key? (1 to insert, 2 to search): ")
+        while choice_search_or_insert not in ['1', '2']:
+            choice_search_or_insert = input("Invalid choice. Do you want to insert more keys or search for a key? (1 to insert, 2 to search): ")
+        if choice_search_or_insert == '1':
+            while True:
+                try:
+                    choice = input("Do you want to insert more keys? (y/n): ")
+                    if choice not in ['y', 'n']:
+                        raise ValueError("Invalid choice")
+                except ValueError as error:
+                    print("Invalid value:", error)
 
-            #choice equals 'y'
-            if choice == 'y':
-                new_key = input("Enter the key you want to insert: ")
-                # set the row number to be the last row number + 1
-                row_number = data['row_number'].max() + 1
-                # ask the user to input value for all the columns in the dataframe except the key column and row_number column
-                column_name = data.columns.tolist()
-                column_name.remove(user_defined_key)
-                column_name.remove('row_number')
-                values = []
-                for column in column_name:
-                    value = input(f"Enter the value for {column}: ")
-                    values.append(value)
+                #choice equals 'y'
+                if choice == 'y':
+                    new_key = input("Enter the key you want to insert: ")
+                    # set the row number to be the last row number + 1
+                    row_number = data['row_number'].max() + 1
+                    # ask the user to input value for all the columns in the dataframe except the key column and row_number column
+                    column_name = data.columns.tolist()
+                    column_name.remove(user_defined_key)
+                    column_name.remove('row_number')
+                    values = []
+                    for column in column_name:
+                        value = input(f"Enter the value for {column}: ")
+                        values.append(value)
 
-                # add the new row to the end of the dataframe
-                new_row = pd.DataFrame({user_defined_key: [new_key], 'row_number': [row_number]})
-                for i in range(len(column_name)):
-                    new_row[column_name[i]] = values[i]
-                data = data.append(new_row, ignore_index=True)
-                # Display the new dataframe
-                print(data)
-                # update the keys list
-                # keys.append((new_key, row_number))
-                # insert the new key into the BTree
-                btree.insertion((new_key, row_number))
-                btree.print_tree(btree.root)
-                print('-'*50)
-                btree.visualize()
+                    # add the new row to the end of the dataframe
+                    new_row = pd.DataFrame({user_defined_key: [new_key], 'row_number': [row_number]})
+                    for i in range(len(column_name)):
+                        new_row[column_name[i]] = values[i]
+                    data = data.append(new_row, ignore_index=True)
+                    # Display the new dataframe
+                    print(data)
+                    # update the keys list
+                    # keys.append((new_key, row_number))
+                    # insert the new key into the BTree
+                    btree.insertion((new_key, row_number))
+                    btree.print_tree(btree.root)
+                    print('-'*50)
+                    btree.visualize()
+                else:
+                    break
+        else:
+            # search for a key
+            search_value = input("Enter the key you want to search: ")
+            result = btree.search_key(search_value)
+            if result is not None:
+                node, index = result
+                # convert node to a list of keys
+                print(f"Key {search_value} found in node with keys: {node.keys} at index {index}")
             else:
-                break
+                print(f"The key {key} is not found in the BTree")
 
     if choice == 2:
         # add a flag to check if the BTree object has been created

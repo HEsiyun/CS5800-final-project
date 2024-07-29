@@ -88,7 +88,7 @@ class BTree:
             right_child.child = left_child.child[t:]
             left_child.child = left_child.child[:t]
             
-    def search_key(self, k, x=None):
+    # def search_key(self, k, x=None):
         """Search for a key in the B-tree and return the node and index of the key if found."""
         if x is None:
             x = self.root  # Start from the root if no node is provided
@@ -103,7 +103,8 @@ class BTree:
             return None
         else:  # Otherwise, move to the appropriate child node
             return self.search_key(k, x.child[i])
-    
+
+
     # Print the tree
     def print_tree(self, x, l=0, prefix=""):
         """Print a structured representation of the B-tree."""
@@ -154,22 +155,22 @@ class BTree:
         plt.show()
 
 
-def main():
-    B = BTree(2)
+# def main():
+#     B = BTree(2)
 
-    for i in range(30):
-        B.insertion((i, 2 * i))
-        B.print_tree(B.root)
-        print('-' * 50)
+#     for i in range(30):
+#         B.insertion((i, 2 * i))
+#     B.print_tree(B.root)
+#         # print('-' * 50)
     
-    # Search for the specific key
-    search_value = 8
-    result = B.search_key(search_value)
-    if result is not None:
-        node, index = result
-        print(f"Key {search_value} found in node with keys: {node.keys} at index {index}")
-    else:
-        print(f"Key {search_value} not found in the B-tree.")
+#     # Search for the specific key
+#     search_value = 8
+#     result = B.search_key(search_value)
+#     if result is not None:
+#         node = result[0]
+#         print(f"Key {search_value} found in node {node.keys}")
+#     else:
+#         print(f"Key {search_value} not found in the B-tree.")
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
