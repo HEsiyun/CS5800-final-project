@@ -117,16 +117,20 @@ def mini_database():
         data = pd.DataFrame(columns=column_names)
         user_defined_key = choose_index(data)
         data = add_row_number(data)
+        # ask user if they want to insert, search, update, delete or exit
         while True:
             try:
-                choice = input("Do you want to insert more keys? (y/n): ")
-                if choice not in ['y', 'n']:
-                    raise ValueError("Invalid choice")
+                crud_choice = input("Do you want to insert, search, update, delete or exit? (1 to insert, 2 to search, 3 to delete, 4 to exit): ")
+                # if crud_choice not in ['1', '2', '3', '4', '5']:
+                #     raise ValueError("Invalid choice")
+                # if crud_choice == '2' and btree is None:
+                #     raise ValueError("BTree object has not been created")
+                # if crud_choice == '3' and btree is None:
+                #     raise ValueError("BTree object has not been created")
             except ValueError as error:
                 print("Invalid value:", error)
 
-            #choice equals 'y'
-            if choice == 'y':
+            if crud_choice == '1':
                 data, new_key, row_number = insert_driver(data, user_defined_key)
                 #Display the new dataframe
                 print(data)
@@ -141,15 +145,14 @@ def mini_database():
                 btree.insertion((new_key, row_number))
                 btree.print_tree(btree.root)
                 btree.visualize()
-            else:
+            elif crud_choice == '2':
                 # ask the user if they want to search for a key
-                choice_search_or_not = input("Do you want to search for a key? (y/n): ")
-                while choice_search_or_not not in ['y', 'n']:
-                    choice_search_or_not = input("Invalid choice. Do you want to search for a key? (y/n): ")
-                if choice_search_or_not == 'y':
-                    search_driver(data, btree)
-                else:
-                    break
+                search_driver(data, btree)
+            elif crud_choice == '3':
+                # delete_driver(data, btree)
+                pass
+            else:
+                break
         
         
         
