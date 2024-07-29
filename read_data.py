@@ -64,25 +64,6 @@ def choose_index(data: pd.DataFrame) -> str:
         print("Invalid type:", type(error), error)
     except Exception as error:
         print("Error:", type(error), error)
-
-
-# def sort_data(data: pd.DataFrame, key: str) -> pd.DataFrame:
-#     '''
-#     Function sort_data
-#     This function sorts the data by the user chosen index column.
-#     Parameters:
-#     data -- the dataframe of the data
-#     key -- the name of the column that is set as index
-#     Returns the sorted dataframe.
-#     '''
-#     try:
-#         data = data.sort_values(key)
-#         return data
-#     except KeyError as error:
-#         print("Key error:", type(error), error)
-#     except Exception as error:
-#         print("Error:", type(error), error)
-   
  
 
 def add_row_number(data: pd.DataFrame) -> pd.DataFrame:

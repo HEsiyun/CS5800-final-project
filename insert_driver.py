@@ -153,9 +153,5 @@ def mini_database():
                 pass
             else:
                 break
-        
-        
-        
-
+            
 mini_database()
-
