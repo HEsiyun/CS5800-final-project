@@ -2,8 +2,43 @@ from read_data import read_in_data, choose_index, add_row_number
 from b_tree_v0 import BTree, BTreeNode, choose_max_degree
 import pandas as pd
 
+def search_driver(data, btree):
+    search_value = input("Enter the key you want to search: ")
+    result = btree.search_key(search_value)
+    if result is not None:
+        node, index = result
+        # convert node to a list of keys
+        print(f"Key {search_value} found in node with keys: {node.keys[index]}")
+    else:
+        print(f"The key {key} is not found in the BTree")
+    # get the row from the dataframe using the row number
+    row_number = node.keys[index][1]
+    row = data[data['row_number'] == row_number]
+    print(row)
 
-def insert_driver():
+def import_driver():
+    data = read_in_data()
+    user_defined_key = choose_index(data)
+    data = add_row_number(data)
+
+    # store row_number and key in a list of tuples, put key in the first element of the tuple
+    keys = list(zip(data[user_defined_key], data['row_number']))
+    # get the max degree of the BTree
+    t = choose_max_degree(data.shape[0])
+    
+    #create a BTree object
+    btree = BTree(t)
+    # insert the keys into the BTree
+    for key in keys:
+        btree.insertion(key)
+    
+    # print the tree
+    btree.print_tree(btree.root)
+    # visualize the tree
+    btree.visualize()
+    return data, btree, user_defined_key
+
+def mini_database():
     # ask the user whether to read in the data from a file or generate the data
     while True:
         try:
@@ -15,25 +50,7 @@ def insert_driver():
             print("Invalid value:", error)
     
     if choice == 1:
-        data = read_in_data()
-        user_defined_key = choose_index(data)
-        data = add_row_number(data)
-
-        # store row_number and key in a list of tuples, put key in the first element of the tuple
-        keys = list(zip(data[user_defined_key], data['row_number']))
-        # get the max degree of the BTree
-        t = choose_max_degree(data.shape[0])
-        
-        #create a BTree object
-        btree = BTree(t)
-        # insert the keys into the BTree
-        for key in keys:
-            btree.insertion(key)
-        
-        # print the tree
-        btree.print_tree(btree.root)
-        # visualize the tree
-        btree.visualize()
+        data, btree, user_defined_key = import_driver()
        
         # ask user if they want to insert more keys or search for a key
         choice_search_or_insert = input("Do you want to insert more keys or search for a key? (1 to insert, 2 to search): ")
@@ -79,19 +96,7 @@ def insert_driver():
                 else:
                     break
         else:
-            # search for a key
-            search_value = input("Enter the key you want to search: ")
-            result = btree.search_key(search_value)
-            if result is not None:
-                node, index = result
-                # convert node to a list of keys
-                print(f"Key {search_value} found in node with keys: {node.keys[index]}")
-            else:
-                print(f"The key {key} is not found in the BTree")
-            # get the row from the dataframe using the row number
-            row_number = node.keys[index][1]
-            row = data[data['row_number'] == row_number]
-            print(row)
+            search_driver(data, btree)
 
     if choice == 2:
         # add a flag to check if the BTree object has been created
@@ -147,10 +152,17 @@ def insert_driver():
                 btree.print_tree(btree.root)
                 btree.visualize()
             else:
-                break
+                # ask the user if they want to search for a key
+                choice_search_or_not = input("Do you want to search for a key? (y/n): ")
+                while choice_search_or_not not in ['y', 'n']:
+                    choice_search_or_not = input("Invalid choice. Do you want to search for a key? (y/n): ")
+                if choice_search_or_not == 'y':
+                    search_driver(data, btree)
+                else:
+                    break
         
         
         
 
-insert_driver()
+mini_database()
 
