@@ -41,7 +41,10 @@ def import_driver():
 def insert_driver(data, user_defined_key):
     new_key = input("Enter the key you want to insert: ")
     # set the row number to be the last row number + 1
-    row_number = data['row_number'].max() + 1
+    if data.empty:
+        row_number = 0
+    else:
+        row_number = data['row_number'].max() + 1
     # ask the user to input value for all the columns in the dataframe except the key column and row_number column
     column_name = data.columns.tolist()
     column_name.remove(user_defined_key)
@@ -72,7 +75,10 @@ def mini_database():
     if choice == 1:
         data, btree, user_defined_key = import_driver()
        
-        # ask user if they want to insert more keys or search for a key
+        # # ask user if they want to insert, search, update, delete or exit
+        # crud_choice = input("Do you want to insert, search, update, delete or exit? (1 to insert, 2 to search, 3 to update, 4 to delete, 5 to exit): ")
+        # while crud_choice not in ['1', '2', '3', '4', '5']:
+        #     crud_choice = input("Invalid choice. Do you want to insert, search, update, delete or exit? (1 to insert, 2 to search, 3 to update, 4 to delete, 5 to exit): ")
         choice_search_or_insert = input("Do you want to insert more keys or search for a key? (1 to insert, 2 to search): ")
         while choice_search_or_insert not in ['1', '2']:
             choice_search_or_insert = input("Invalid choice. Do you want to insert more keys or search for a key? (1 to insert, 2 to search): ")
@@ -96,9 +102,16 @@ def mini_database():
                     print('-'*50)
                     btree.visualize()
                 else:
-                    break
-        else:
-            search_driver(data, btree)
+                    # ask the user if they want to search for a key
+                    choice_search_or_not = input("Do you want to search for a key? (y/n): ")
+                    while choice_search_or_not not in ['y', 'n']:
+                        choice_search_or_not = input("Invalid choice. Do you want to search for a key? (y/n): ")
+                    if choice_search_or_not == 'y':
+                        search_driver(data, btree)
+                    else:
+                        break
+        # else:
+        #     search_driver(data, btree)
 
     if choice == 2:
         # add a flag to check if the BTree object has been created
@@ -121,26 +134,8 @@ def mini_database():
 
             #choice equals 'y'
             if choice == 'y':
-                new_key = input("Enter the key you want to insert: ")
-                # set the row number to be the last row number + 1
-                if data.empty:
-                    row_number = 0
-                else:
-                    row_number = data['row_number'].max() + 1
-                # ask the user to input value for all the columns in the dataframe except the key column and row_number column
-                column_name = data.columns.tolist()
-                column_name.remove(user_defined_key)
-                column_name.remove('row_number')
-                values = []
-                for column in column_name:
-                    value = input(f"Enter the value for {column}: ")
-                    values.append(value)
-                # add the new row to the end of the dataframe
-                new_row = pd.DataFrame({user_defined_key: [new_key], 'row_number': [row_number]})
-                for i in range(len(column_name)):
-                    new_row[column_name[i]] = values[i]
-                data = data.append(new_row, ignore_index=True)
-                # Display the new dataframe
+                data, new_key, row_number = insert_driver(data, user_defined_key)
+                #Display the new dataframe
                 print(data)
                 
                 # ask the user to input the max degree of the BTree
