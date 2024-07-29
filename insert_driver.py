@@ -75,43 +75,36 @@ def mini_database():
     if choice == 1:
         data, btree, user_defined_key = import_driver()
        
-        # # ask user if they want to insert, search, update, delete or exit
-        # crud_choice = input("Do you want to insert, search, update, delete or exit? (1 to insert, 2 to search, 3 to update, 4 to delete, 5 to exit): ")
-        # while crud_choice not in ['1', '2', '3', '4', '5']:
-        #     crud_choice = input("Invalid choice. Do you want to insert, search, update, delete or exit? (1 to insert, 2 to search, 3 to update, 4 to delete, 5 to exit): ")
-        choice_search_or_insert = input("Do you want to insert more keys or search for a key? (1 to insert, 2 to search): ")
-        while choice_search_or_insert not in ['1', '2']:
-            choice_search_or_insert = input("Invalid choice. Do you want to insert more keys or search for a key? (1 to insert, 2 to search): ")
-        if choice_search_or_insert == '1':
-            while True:
-                try:
-                    choice = input("Do you want to insert more keys? (y/n): ")
-                    if choice not in ['y', 'n']:
-                        raise ValueError("Invalid choice")
-                except ValueError as error:
-                    print("Invalid value:", error)
+        # ask user if they want to insert, search, update, delete or exit
+        while True:
+            try:
+                crud_choice = input("Do you want to insert, search, update, delete or exit? (1 to insert, 2 to search, 3 to delete, 4 to exit): ")
+                if crud_choice not in ['1', '2', '3', '4', '5']:
+                    raise ValueError("Invalid choice")
+            except ValueError as error:
+                print("Invalid value:", error)
 
-                #choice equals 'y'
-                if choice == 'y':
-                    data, new_key, row_number = insert_driver(data, user_defined_key)
-                    # Display the new dataframe
-                    print(data)
-                    # insert the new key into the BTree
-                    btree.insertion((new_key, row_number))
-                    btree.print_tree(btree.root)
-                    print('-'*50)
-                    btree.visualize()
-                else:
-                    # ask the user if they want to search for a key
-                    choice_search_or_not = input("Do you want to search for a key? (y/n): ")
-                    while choice_search_or_not not in ['y', 'n']:
-                        choice_search_or_not = input("Invalid choice. Do you want to search for a key? (y/n): ")
-                    if choice_search_or_not == 'y':
-                        search_driver(data, btree)
-                    else:
-                        break
-        # else:
-        #     search_driver(data, btree)
+        # choice_search_or_insert = input("Do you want to insert more keys or search for a key? (1 to insert, 2 to search): ")
+        # while choice_search_or_insert not in ['1', '2']:
+        #     choice_search_or_insert = input("Invalid choice. Do you want to insert more keys or search for a key? (1 to insert, 2 to search): ")
+        # if choice_search_or_insert == '1':
+            if crud_choice == '1':
+                data, new_key, row_number = insert_driver(data, user_defined_key)
+                # Display the new dataframe
+                print(data)
+                # insert the new key into the BTree
+                btree.insertion((new_key, row_number))
+                btree.print_tree(btree.root)
+                print('-'*50)
+                btree.visualize()
+            elif crud_choice == '2':
+                # ask the user if they want to search for a key
+                search_driver(data, btree)
+            elif crud_choice == '3':
+                # delete_driver(data, btree)
+                pass
+            else:
+                break
 
     if choice == 2:
         # add a flag to check if the BTree object has been created
