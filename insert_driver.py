@@ -85,9 +85,13 @@ def insert_driver():
             if result is not None:
                 node, index = result
                 # convert node to a list of keys
-                print(f"Key {search_value} found in node with keys: {node.keys} at index {index}")
+                print(f"Key {search_value} found in node with keys: {node.keys[index]}")
             else:
                 print(f"The key {key} is not found in the BTree")
+            # get the row from the dataframe using the row number
+            row_number = node.keys[index][1]
+            row = data[data['row_number'] == row_number]
+            print(row)
 
     if choice == 2:
         # add a flag to check if the BTree object has been created
