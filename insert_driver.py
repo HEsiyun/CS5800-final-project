@@ -38,6 +38,26 @@ def import_driver():
     btree.visualize()
     return data, btree, user_defined_key
 
+def insert_driver(data, user_defined_key):
+    new_key = input("Enter the key you want to insert: ")
+    # set the row number to be the last row number + 1
+    row_number = data['row_number'].max() + 1
+    # ask the user to input value for all the columns in the dataframe except the key column and row_number column
+    column_name = data.columns.tolist()
+    column_name.remove(user_defined_key)
+    column_name.remove('row_number')
+    values = []
+    for column in column_name:
+        value = input(f"Enter the value for {column}: ")
+        values.append(value)
+
+    # add the new row to the end of the dataframe
+    new_row = pd.DataFrame({user_defined_key: [new_key], 'row_number': [row_number]})
+    for i in range(len(column_name)):
+        new_row[column_name[i]] = values[i]
+    data = data.append(new_row, ignore_index=True)
+    return data, new_key, row_number
+
 def mini_database():
     # ask the user whether to read in the data from a file or generate the data
     while True:
@@ -67,27 +87,9 @@ def mini_database():
 
                 #choice equals 'y'
                 if choice == 'y':
-                    new_key = input("Enter the key you want to insert: ")
-                    # set the row number to be the last row number + 1
-                    row_number = data['row_number'].max() + 1
-                    # ask the user to input value for all the columns in the dataframe except the key column and row_number column
-                    column_name = data.columns.tolist()
-                    column_name.remove(user_defined_key)
-                    column_name.remove('row_number')
-                    values = []
-                    for column in column_name:
-                        value = input(f"Enter the value for {column}: ")
-                        values.append(value)
-
-                    # add the new row to the end of the dataframe
-                    new_row = pd.DataFrame({user_defined_key: [new_key], 'row_number': [row_number]})
-                    for i in range(len(column_name)):
-                        new_row[column_name[i]] = values[i]
-                    data = data.append(new_row, ignore_index=True)
+                    data, new_key, row_number = insert_driver(data, user_defined_key)
                     # Display the new dataframe
                     print(data)
-                    # update the keys list
-                    # keys.append((new_key, row_number))
                     # insert the new key into the BTree
                     btree.insertion((new_key, row_number))
                     btree.print_tree(btree.root)
