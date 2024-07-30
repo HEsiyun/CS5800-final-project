@@ -5,7 +5,7 @@ def choose_max_degree(df_length: int) -> int:
     '''
     Function choose_max_degree
     This function takes the length of the dataframe and prompts the user to enter the maximum degree of the B tree.
-    Let the user choose the maximum degree of the B tree. The minimum degree is half of the maximum degree.
+    Let the user choose the maximum degree of the B tree. The minimum degree is half of the maximum degree. The maximum degree must be an even number larger than 3.
     Parameters:
     df_length -- the length of the dataframe
     Returns the minimum degree of the B tree.
@@ -16,6 +16,9 @@ def choose_max_degree(df_length: int) -> int:
             if max_degree < 4:
                 raise ValueError("Degree must be greater than 3")
             return int(max_degree / 2) # Convert to minimum degree
+            # if the max_degree is not even, raise an error
+            if max_degree % 2 != 0:
+                raise ValueError("Degree must be an even number")
         except ValueError as error:
             print("Invalid value:", error)
 
@@ -140,7 +143,6 @@ class BTree:
         else:  # Otherwise, move to the appropriate child node
             return self.search_key(k, x.child[i])
 
-
     # Print the tree
     def print_tree(self, x, l=0, prefix=""):
         '''
@@ -221,6 +223,9 @@ class BTree:
 #         print(f"Key {search_key} found in node with keys: {node.keys[index]} at index {index}")
 #     else:
 #         print(f"Key {search_key} not found in the B-tree.")
+
+#     B.delete(B.root, (15,))
+#     B.print_tree(B.root)
 
 # if __name__ == '__main__':
 #     main()

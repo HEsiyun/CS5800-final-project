@@ -102,8 +102,8 @@ def mini_database():
         # ask user if they want to insert, search, update, delete or exit
         while True:
             try:
-                crud_choice = input("Do you want to insert, search, update, delete or exit? (1 to insert, 2 to search, 3 to delete, 4 to exit): ")
-                if crud_choice not in ['1', '2', '3', '4', '5']:
+                crud_choice = input("Do you want to insert, search, delete or exit? (1 to insert, 2 to search, 3 to delete, 4 to exit): ")
+                if crud_choice not in ['1', '2', '3', '4']:
                     raise ValueError("Invalid choice")
             except ValueError as error:
                 print("Invalid value:", error)
@@ -121,8 +121,23 @@ def mini_database():
                 # ask the user if they want to search for a key
                 search_driver(data, btree)
             elif crud_choice == '3':
-                # delete_driver(data, btree)
-                pass
+                # ask the user if they want to delete a key
+                delete_key = input("Enter the key you want to delete: ")
+                # search for the key in the BTree
+                result = btree.search_key(delete_key)
+                node, index = result
+                print(node.keys[index])
+                # Use the row number to delete the row in the dataframe
+                data = data.drop(data[data['row_number'] == node.keys[index][1]].index)
+                print(data)
+                # Use the new dataframe to create a new BTree
+                data = add_row_number(data)
+                keys = list(zip(data[user_defined_key], data['row_number']))
+                btree = BTree(btree.t)
+                for key in keys:
+                    btree.insertion(key)
+                btree.print_tree(btree.root)
+
             else:
                 break
 
@@ -140,7 +155,7 @@ def mini_database():
         # ask user if they want to insert, search, update, delete or exit
         while True:
             try:
-                crud_choice = input("Do you want to insert, search, update, delete or exit? (1 to insert, 2 to search, 3 to delete, 4 to exit): ")
+                crud_choice = input("Do you want to insert, search, delete or exit? (1 to insert, 2 to search, 4 to exit): ")
             except ValueError as error:
                 print("Invalid value:", error)
 
@@ -163,8 +178,22 @@ def mini_database():
                 # ask the user if they want to search for a key
                 search_driver(data, btree)
             elif crud_choice == '3':
-                # delete_driver(data, btree)
-                pass
+                # ask the user if they want to delete a key
+                delete_key = input("Enter the key you want to delete: ")
+                # search for the key in the BTree
+                result = btree.search_key(delete_key)
+                node, index = result
+                print(node.keys[index])
+                # Use the row number to delete the row in the dataframe
+                data = data.drop(data[data['row_number'] == node.keys[index][1]].index)
+                print(data)
+                # Use the new dataframe to create a new BTree
+                data = add_row_number(data)
+                keys = list(zip(data[user_defined_key], data['row_number']))
+                btree = BTree(btree.t)
+                for key in keys:
+                    btree.insertion(key)
+                btree.print_tree(btree.root)
             else:
                 break
             
