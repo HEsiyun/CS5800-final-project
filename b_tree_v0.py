@@ -176,6 +176,29 @@ class BTree:
         else:  # Otherwise, move to the appropriate child node
             return self.search_key(k, x.child[i], x)
 
+    def get_parent(self, node, current=None, parent=None):
+        '''
+        Function get_parent
+        This function finds the parent of a given node in the B-tree.
+        Parameters:
+        node -- the node whose parent is to be found
+        current -- the current node being inspected (used for recursion, default is root)
+        parent -- the parent of the current node (used for recursion, default is None)
+        Returns the parent node if found, otherwise None
+        '''
+        if current is None:
+            current = self.root
+        
+        if node in current.child:
+            return current
+        
+        for child in current.child:
+            if not child.leaf:
+                found_parent = self.get_parent(node, child, current)
+                if found_parent:
+                    return found_parent
+        return None
+
     def remove(self, k:int, x=None, parent=None):
         # A function to remove key k from the sub-tree rooted with this node
         result = self.search_key(k, x, parent)
@@ -195,7 +218,7 @@ class BTree:
     def remove_from_leaf(self, k, node:BTreeNode, parent:BTreeNode):
         # A function to remove the k-th key from this node, which is a leaf node
         node.keys.pop(k)
-        if not node.has_minimum_keys(self.t):  
+        if not node.has_minimum_keys(self.t):
             print(f"Node with keys {node.keys} has less than {self.t-1} keys")
             sibling = node.sibling_type(parent)
             if sibling == 0 and parent.child[parent.child.index(node) - 1].has_minimum_keys(self.t):
@@ -270,6 +293,9 @@ class BTree:
 
         # Remove the merged node from parent's children
         parent.child.pop(index)
+        if not parent.has_minimum_keys(self.t):
+            print(f"Parent with keys {parent.keys} has less than {self.t-1} keys")
+            self.borrow_from_leaf_when_parent_sibling_all_have_minimal_keys(parent)
         
 
     def merge_with_right(self, node, parent):
@@ -280,6 +306,7 @@ class BTree:
         node -- the node to merge with its right sibling
         parent -- the parent node of the node
         '''
+        
         index = parent.child.index(node)
         right_sibling = parent.child[index + 1]
 
@@ -293,6 +320,37 @@ class BTree:
 
         # Remove the merged node from parent's children
         parent.child.pop(index + 1)
+        if not parent.has_minimum_keys(self.t):
+            print(f"Parent with keys {parent.keys} has less than {self.t-1} keys")
+            self.borrow_from_leaf_when_parent_sibling_all_have_minimal_keys(parent)
+
+    def borrow_from_leaf_when_parent_sibling_all_have_minimal_keys(self, parent:BTreeNode):
+        '''
+        Function borrow_from_leaf_when_parent_sibling_all_have_minimal_keys
+        This function handles the case where both the parent and siblings have minimal keys by recursively
+        finding a node with more than minimal keys.
+        Parameters:
+        k -- the key to remove
+        node -- the current node (leaf) from which the key is to be removed
+        parent -- the parent node of the current node
+        '''
+        grandparent = None
+        current_node = parent
+        current_parent = None
+
+        # Traverse up the tree to find a suitable node with more than minimal keys
+        while current_node is not None and current_node.has_minimum_keys(self.t):
+            current_parent = self.get_parent(current_node)
+            grandparent = current_node
+            current_node = current_parent
+
+        # If a suitable node is found, borrow from it
+        if current_node is not None and not current_node.has_minimum_keys(self.t):
+            if current_parent is not None:
+                sibling_type = grandparent.sibling_type(current_parent)
+                if sibling_type == 0:
+                    self.borrow_from_left(grandparent, current_parent)
+               
 
     def remove_from_non_leaf(self, index):
         # A function to remove the index-th key from this node, which is a non-leaf node
@@ -494,8 +552,28 @@ def main():
     B.print_tree(B.root)
     B.remove(34)
     B.print_tree(B.root)
-    #B.remove()
-    #B.print_tree(B.root)
+    B.remove(18)
+    B.print_tree(B.root)
+    B.remove(24)
+    B.print_tree(B.root)
+    B.remove(25)
+    B.print_tree(B.root)
+    B.remove(32)
+    B.print_tree(B.root)
+    B.remove(29)
+    B.print_tree(B.root)
+    B.remove(28)
+    B.print_tree(B.root)
+    B.remove(27)
+    B.print_tree(B.root)
+    B.remove(0)
+    B.print_tree(B.root)
+    B.remove(4)
+    B.print_tree(B.root)
+    B.remove(13)
+    B.print_tree(B.root)
+    
+
 
     #B.remove(28)
     
