@@ -155,7 +155,9 @@ def mini_database():
         # ask user if they want to insert, search, update, delete or exit
         while True:
             try:
-                crud_choice = input("Do you want to insert, search, delete or exit? (1 to insert, 2 to search, 4 to exit): ")
+                crud_choice = input("Do you want to insert, search, delete or exit? (1 to insert, 2 to search, 3 to delete, 4 to exit): ")
+                if crud_choice not in ['1', '2', '3', '4']:
+                    raise ValueError("Invalid choice")
             except ValueError as error:
                 print("Invalid value:", error)
 
