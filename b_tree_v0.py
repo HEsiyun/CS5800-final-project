@@ -152,6 +152,30 @@ class BTree:
             right_child.child = left_child.child[t:]
             left_child.child = left_child.child[:t]
     
+    def searching(self, k, x=None):
+        '''
+        Function search_key
+        This function searches for a key in the B tree.
+        Parameters:
+        k -- the key to search
+        x -- the node to start the search from
+        Returns the node and index of the key if found, otherwise None.
+        '''
+        if x is None:
+            x = self.root  # Start from the root if no node is provided
+        i = 0
+        # Navigate through the keys of the node to find the possible location of the key
+        # Make sure k[0] is compared with x.keys[i][0] since both are tuples
+        while i < len(x.keys) and k > x.keys[i][0]:
+            i += 1
+        # Check if the key is found in the current node
+        if i < len(x.keys) and k == x.keys[i][0]:
+            return (x, i)
+        elif x.leaf:  # If reached a leaf node, the key is not present
+            return None
+        else:  # Otherwise, move to the appropriate child node
+            return self.searching(k, x.child[i])
+
     def search_key(self, k: int, x=None, parent=None):
         '''
         Function search_key
@@ -490,9 +514,19 @@ def main():
 
     for i in range(80):
         B.insertion((i, "o"))
-        
+    
     
     B.print_tree(B.root)
+
+    # Search for the specific key
+    search_value = 77
+    result = B.searching(search_value)
+    if result is not None:
+        node, index = result
+        print(f"Key {search_value} found in node with keys: {node.keys[index]} at index {index}")
+    else:
+        print(f"Key {search_value} not found in the B-tree.")
+
     # Search for the specific key
     # search_value = 10
     # search_key = (search_value)  # Ensure you're searching for the entire tuple
@@ -540,11 +574,7 @@ def main():
 
     B.remove(68)
 
-    B.print_tree(B.root)
-    index, key, parent = B.search_key(77)
-    print("Key found: ", key.keys[index])
-    
-    B.print_tree(B.root)
+    #B.print_tree(B.root)
     
     #B.remove(3)
     #B.remove(26)

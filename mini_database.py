@@ -11,7 +11,7 @@ def search_driver(data, btree):
     btree -- the BTree object
     '''
     search_value = input("Enter the key you want to search: ")
-    result = btree.search_key(search_value)
+    result = btree.searching(search_value)
     if result is not None:
         node, index = result
         # convert node to a list of keys
@@ -124,7 +124,7 @@ def mini_database():
                 # ask the user if they want to delete a key
                 delete_key = input("Enter the key you want to delete: ")
                 # search for the key in the BTree
-                result = btree.search_key(delete_key)
+                result = btree.searching(delete_key)
                 node, index = result
                 print(node.keys[index])
                 # Use the row number to delete the row in the dataframe
@@ -181,7 +181,7 @@ def mini_database():
                 # ask the user if they want to delete a key
                 delete_key = input("Enter the key you want to delete: ")
                 # search for the key in the BTree
-                result = btree.search_key(delete_key)
+                result = btree.searching(delete_key)
                 node, index = result
                 print(node.keys[index])
                 # Use the row number to delete the row in the dataframe
