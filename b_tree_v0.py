@@ -44,6 +44,28 @@ class BTreeNode:
         '''
         return len(self.keys) > t-1
 
+    def sibling_type(self, parent):
+        '''
+        Function sibling_type
+        This function determines if the current node has a left or right sibling.
+        Parameters:
+        parent -- the parent node of the current node
+        Returns 0 if there is a left sibling, 1 if there is a right sibling, -1 if no siblings are found
+        '''
+        if parent is None:
+            return -1
+     
+        # Find the index of the current node in the parent's children list
+        index = parent.child.index(self)
+        
+        # Check for left sibling
+        if index > 0:
+            return 0
+        # Check for right sibling
+        elif index < len(parent.child) - 1:
+            return 1
+        else:
+            return -1
 
 class BTree:
     '''
@@ -165,17 +187,112 @@ class BTree:
         
         if target.leaf:
             print(f"Removing key {k} from leaf node")
-            self.remove_from_leaf(index, target)
+            self.remove_from_leaf(index, target, parent)
         else:
             print(f"Removing key {k} from non-leaf node")
-            self.remove_from_non_leaf(index, target)
+            self.remove_from_non_leaf(index, target, parent)
 
-    def remove_from_leaf(self, k, node):
+    def remove_from_leaf(self, k, node:BTreeNode, parent:BTreeNode):
         # A function to remove the k-th key from this node, which is a leaf node
-        if not node.has_minimum_keys(self.t):
-            print("This remove is illegal")
-            return
         node.keys.pop(k)
+        if not node.has_minimum_keys(self.t):  
+            print(f"Node with keys {node.keys} has less than {self.t-1} keys")
+            sibling = node.sibling_type(parent)
+            if sibling == 0 and parent.child[parent.child.index(node) - 1].has_minimum_keys(self.t):
+                self.borrow_from_left(node, parent)
+                return
+                # If the left sibling has t-1 keys, merge with it
+            elif sibling == 0 and not parent.child[parent.child.index(node) - 1].has_minimum_keys(self.t):
+                self.merge_with_left(node, parent)
+                return
+            elif sibling == 1 and parent.child[parent.child.index(node) + 1].has_minimum_keys(self.t):
+                self.borrow_from_right(node, parent)
+                return
+                # If the right sibling has t-1 keys, merge with it
+            else:
+                self.merge_with_right(node, parent)
+                return
+
+    def borrow_from_left(self, node, parent):
+        '''
+        Function borrow_from_left
+        This function borrows a key from the left sibling of the node.
+        Parameters:
+        node -- the node to borrow a key into
+        parent -- the parent node of the node
+        '''
+        index = parent.child.index(node)
+        left_sibling = parent.child[index - 1]
+
+        # Pass largest key from left sibling to parent
+        node.keys.insert(0, parent.keys[index - 1])
+        # Pass largest key from parent to node
+        parent.keys[index - 1] = left_sibling.keys.pop()
+
+
+    def borrow_from_right(self, node, parent):
+        '''
+        Function borrow_from_right
+        This function borrows a key from the right sibling of the node.
+        Parameters:
+        node -- the node to borrow a key into
+        parent -- the parent node of the node
+        '''
+        index = parent.child.index(node)
+        right_sibling = parent.child[index + 1]
+
+        # Pass smallest key from right sibling to parent
+        node.keys.append(parent.keys[index])
+        # Pass largest key from parent to node
+        parent.keys[index] = right_sibling.keys.pop(0)
+
+
+    def merge_with_left(self, node, parent):
+        '''
+        Function merge_with_left
+        This function merges the node with its left sibling.
+        Parameters:
+        node -- the node to merge with its left sibling
+        parent -- the parent node of the node
+        '''
+        index = parent.child.index(node)
+        left_sibling = parent.child[index - 1]
+
+        # Pass the key from parent to left sibling
+        left_sibling.keys.append(parent.keys.pop(index - 1))
+        print(left_sibling.keys)
+
+        # Merge the keys and children from node to left sibling
+        left_sibling.keys.extend(node.keys)
+        print(left_sibling.keys)
+        if not node.leaf:
+            left_sibling.child.extend(node.child)
+
+        # Remove the merged node from parent's children
+        parent.child.pop(index)
+        
+
+    def merge_with_right(self, node, parent):
+        '''
+        Function merge_with_right
+        This function merges the node with its right sibling.
+        Parameters:
+        node -- the node to merge with its right sibling
+        parent -- the parent node of the node
+        '''
+        index = parent.child.index(node)
+        right_sibling = parent.child[index + 1]
+
+        # Pass the key from parent to node
+        node.keys.append(parent.keys.pop(index))
+
+        # Merge the keys and children from right sibling to node
+        node.keys.extend(right_sibling.keys)
+        if not node.leaf:
+            node.child.extend(right_sibling.child)
+
+        # Remove the merged node from parent's children
+        parent.child.pop(index + 1)
 
     def remove_from_non_leaf(self, index):
         # A function to remove the index-th key from this node, which is a non-leaf node
@@ -348,12 +465,12 @@ class BTree:
 
 
 def main():
-    B = BTree(2)
+    B = BTree(3)
 
-    for i in range(30):
-        B.insertion((i, 2 * i))
+    for i in range(35):
+        B.insertion((i, "o"))
         
-        print('-' * 50)
+    
     B.print_tree(B.root)
     # Search for the specific key
     search_value = 29
@@ -367,15 +484,24 @@ def main():
     else:
         print(f"Key {search_key} not found in the B-tree.")
 
-    B.remove(29)
-    print('-' * 50)
-    B.remove(29)
-    print('-' * 50)
-    B.remove(28)
-    
-    B.remove(24)
-    B.remove(26)
+    B.remove(30)
     B.print_tree(B.root)
+    print('-' * 50)
+    B.remove(31)
+    B.print_tree(B.root)
+    print('-' * 50)
+    B.remove(33)
+    B.print_tree(B.root)
+    B.remove(34)
+    B.print_tree(B.root)
+    #B.remove()
+    #B.print_tree(B.root)
+
+    #B.remove(28)
+    
+    #B.remove(24)
+    #B.remove(26)
+    #B.print_tree(B.root)
 
 if __name__ == '__main__':
     main()
