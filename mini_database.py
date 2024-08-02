@@ -80,6 +80,32 @@ def insert_driver(data, user_defined_key):
         new_row[column_name[i]] = values[i]
     data = data.append(new_row, ignore_index=True)
     return data, new_key, row_number
+def delete_driver(data, btree, user_defined_key):
+    '''
+    Function delete_driver
+    This function deletes a row from the dataframe and the BTree.
+    Parameters:
+    data -- the dataframe of the data
+    btree -- the BTree object
+    user_defined_key -- the user defined key
+    Returns the updated dataframe and BTree.
+    '''
+    delete_key = input("Enter the key you want to delete: ")
+    result = btree.searching(delete_key)
+    if result is not None:
+        node, index = result
+        print(f"Deleting key {delete_key} from node with keys: {node.keys[index]}")
+        row_number = node.keys[index][1]
+        # Delete the row from the dataframe
+        data = data[data['row_number'] != row_number]
+        # Delete the key from the BTree
+        btree.delete(delete_key)
+        btree.print_tree(btree.root)
+        btree.visualize()
+        print("Row deleted successfully.")
+    else:
+        print(f"The key {delete_key} is not found in the BTree")
+    return data, btree
 
 def mini_database():
     ''' 
@@ -121,23 +147,23 @@ def mini_database():
                 # ask the user if they want to search for a key
                 search_driver(data, btree)
             elif crud_choice == '3':
-                # ask the user if they want to delete a key
-                delete_key = input("Enter the key you want to delete: ")
-                # search for the key in the BTree
-                result = btree.searching(delete_key)
-                node, index = result
-                print(node.keys[index])
-                # Use the row number to delete the row in the dataframe
-                data = data.drop(data[data['row_number'] == node.keys[index][1]].index)
-                print(data)
-                # Use the new dataframe to create a new BTree
-                data = add_row_number(data)
-                keys = list(zip(data[user_defined_key], data['row_number']))
-                btree = BTree(btree.t)
-                for key in keys:
-                    btree.insertion(key)
-                btree.print_tree(btree.root)
-
+                # optional cheat when the code doesnt work
+                # delete_key = input("Enter the key you want to delete: ")
+                # # search for the key in the BTree
+                # result = btree.searching(delete_key)
+                # node, index = result
+                # print(node.keys[index])
+                # # Use the row number to delete the row in the dataframe
+                # data = data.drop(data[data['row_number'] == node.keys[index][1]].index)
+                # print(data)
+                # # Use the new dataframe to create a new BTree
+                # data = add_row_number(data)
+                # keys = list(zip(data[user_defined_key], data['row_number']))
+                # btree = BTree(btree.t)
+                # for key in keys:
+                #     btree.insertion(key)
+                # btree.print_tree(btree.root)
+                data, btree = delete_driver(data, btree, user_defined_key)
             else:
                 break
 
@@ -180,22 +206,23 @@ def mini_database():
                 # ask the user if they want to search for a key
                 search_driver(data, btree)
             elif crud_choice == '3':
-                # ask the user if they want to delete a key
-                delete_key = input("Enter the key you want to delete: ")
-                # search for the key in the BTree
-                result = btree.searching(delete_key)
-                node, index = result
-                print(node.keys[index])
-                # Use the row number to delete the row in the dataframe
-                data = data.drop(data[data['row_number'] == node.keys[index][1]].index)
-                print(data)
-                # Use the new dataframe to create a new BTree
-                data = add_row_number(data)
-                keys = list(zip(data[user_defined_key], data['row_number']))
-                btree = BTree(btree.t)
-                for key in keys:
-                    btree.insertion(key)
-                btree.print_tree(btree.root)
+                # # ask the user if they want to delete a key
+                # delete_key = input("Enter the key you want to delete: ")
+                # # search for the key in the BTree
+                # result = btree.searching(delete_key)
+                # node, index = result
+                # print(node.keys[index])
+                # # Use the row number to delete the row in the dataframe
+                # data = data.drop(data[data['row_number'] == node.keys[index][1]].index)
+                # print(data)
+                # # Use the new dataframe to create a new BTree
+                # data = add_row_number(data)
+                # keys = list(zip(data[user_defined_key], data['row_number']))
+                # btree = BTree(btree.t)
+                # for key in keys:
+                #     btree.insertion(key)
+                # btree.print_tree(btree.root)
+                data, btree = delete_driver(data, btree, user_defined_key)
             else:
                 break
             
