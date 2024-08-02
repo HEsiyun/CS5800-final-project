@@ -176,64 +176,14 @@ class BTree:
         else:  # Otherwise, move to the appropriate child node
             return self.searching(k, x.child[i])
 
-    def search_key(self, k: int, x=None, parent=None):
-        '''
-        Function search_key
-        This function searches for a key in the B tree.
-        Parameters:
-        k -- the key to search
-        x -- the node to start the search from
-        Returns the node and index of the key if found, otherwise None.
-        '''
-        if x is None:
-            x = self.root  # Start from the root if no node is provided
-        i = 0
-        # Navigate through the keys of the node to find the possible location of the key
-        while i < len(x.keys) and k > x.keys[i][0]:
-            i += 1
-
-        # Check if the key is found in the current node
-        if i < len(x.keys) and k == x.keys[i][0]:
-            return (i, x, parent)
-
-        # If the node is a leaf, the key is not present
-        if x.leaf:
-            print(f"Key {k} not found in the B-tree")
-            return None
-
-        # Otherwise, move to the appropriate child node
-        # Make sure the recursive call is returned
-        if i < len(x.child):
-            return self.search_key(k, x.child[i], x)  # Pass the current node as the parent
-        else:
-            # If the index is out of bounds, it means the child does not exist, which should be an error state
-            print("Attempted to access non-existent child; this may indicate a problem in the tree structure.")
-            return None
-
-    def get_parent(self, node, current=None, parent=None):
-        '''
-        Function get_parent
-        This function finds the parent of a given node in the B-tree.
-        Parameters:
-        node -- the node whose parent is to be found
-        current -- the current node being inspected (used for recursion, default is root)
-        parent -- the parent of the current node (used for recursion, default is None)
-        Returns the parent node if found, otherwise None
-        '''
-        if current is None:
-            current = self.root
-        
-        if node in current.child:
-            return current
-        
-        for child in current.child:
-            if not child.leaf:
-                found_parent = self.get_parent(node, child, current)
-                if found_parent:
-                    return found_parent
-        return None
-
     def delete(self, k, x=None):
+        '''
+        Function delete
+        This function deletes a key from the B tree.
+        Parameters:
+        k -- the key to delete
+        x -- the node to start the deletion from     
+        '''
 
         if not x:
             x = self.root
@@ -276,6 +226,14 @@ class BTree:
             self.delete(k, x.child[i])
 
     def delete_internal_node(self, x, k, i):
+        '''
+        Function delete_internal_node
+        This function deletes a key from an internal node.
+        Parameters:
+        x -- the parent node
+        k -- the key to delete
+        i -- the index of the key in the parent node
+        '''
         if len(x.child[i].keys) >= self.t:
             x.keys[i] = self.delete_predecessor(x.child[i])
         elif len(x.child[i + 1].keys) >= self.t:
@@ -285,16 +243,41 @@ class BTree:
             self.delete(x.child[i], k)
 
     def delete_predecessor(self, x):
+        '''
+        Function delete_predecessor
+        This function follows the left subtree until the rightmost key
+            is found (predecessor), and removes the predecessor
+            ensuring the node meets the B-tree properties.
+        Parameters:
+        x -- the node to start from
+        '''
         if x.leaf:
             return x.keys.pop()
         return self.delete_predecessor(x.child[-1])
 
     def delete_successor(self, x):
-        if x.leaf:
-            return x.keys.pop(0)
-        return self.delete_successor(x.child[0])
+        """
+        Follows the right subtree until the leftmost key is found (successor),
+        and removes the successor, ensuring the node meets the B-tree properties.
+        """
+        # Traverse until a leaf is found
+        while not x.leaf:
+            if len(x.child[0].keys) < self.t:
+                # Ensure the child has enough keys, rebalance if necessary
+                self.rebalance_before_delete(x, 0)
+            x = x.child[0]
+
+        # Now x is a leaf, return and remove the first key
+        return x.keys.pop(0)
 
     def rebalance_before_delete(self, x, idx):
+        '''
+        Function rebalance_before_delete
+        This function rebalances the node before deletion.
+        Parameters:
+        x -- the parent node
+        idx -- the index of the child node to rebalance
+        '''
         t = self.t
         if idx > 0 and len(x.child[idx - 1].keys) >= t:
             self.borrow_from_left(x, idx)
@@ -307,23 +290,14 @@ class BTree:
             else:
                 self.merge_nodes(x, idx)
 
-    def borrow_from_left(self, x, idx):
-        left_sibling = x.child[idx - 1]
-        current_node = x.child[idx]
-        current_node.keys.insert(0, x.keys[idx - 1])
-        x.keys[idx - 1] = left_sibling.keys.pop()
-        if not current_node.leaf:
-            current_node.child.insert(0, left_sibling.child.pop())
-
-    def borrow_from_right(self, x, idx):
-        right_sibling = x.child[idx + 1]
-        current_node = x.child[idx]
-        current_node.keys.append(x.keys[idx])
-        x.keys[idx] = right_sibling.keys.pop(0)
-        if not current_node.leaf:
-            current_node.child.append(right_sibling.child.pop(0))
-
     def merge_nodes(self, x, idx):
+        '''
+        Function merge_nodes
+        This function merges the node with its sibling.
+        Parameters:
+        x -- the parent node
+        idx -- the index of the child node to merge
+        '''
         left_child = x.child[idx]
         right_child = x.child[idx + 1]
         left_child.keys.append(x.keys.pop(idx))
@@ -331,6 +305,7 @@ class BTree:
         if not left_child.leaf:
             left_child.child.extend(right_child.child)
         x.child.pop(idx + 1)
+    
     # Print the tree
     def print_tree(self, x, l=0, prefix=""):
         '''
@@ -393,13 +368,12 @@ class BTree:
 
 
 def main():
-    B = BTree(2)
+    B = BTree(8)
 
-    for i in range(30):
+    for i in range(50):
         B.insertion((i, "o"))
-    
-    
-    B.print_tree(B.root)
+
+        B.print_tree(B.root)
 
     # Search for the specific key
     search_value = 11
@@ -410,22 +384,14 @@ def main():
     else:
         print(f"Key {search_value} not found in the B-tree.")
 
-    # Search for the specific key
-    search_value = 21
-    search_key = (search_value)  # Ensure you're searching for the entire tuple
-    result = B.search_key(search_key)
-    if result is not None:
-        index, node, parent = result
-        #found_key = node.keys[index]  # Get only the specific key
-        # print(f"Key {search_key} found at index {index} with data: {found_key}")
-        print(f"Key {search_key} found in node with keys: {node.keys[index]} at index {index}, parent is {parent.keys}")
-    else:
-        print(f"Key {search_key} not found in the B-tree.")
-    for i in range(0, 31):
-        print(f"Deleting {i}")
-        B.delete(i)
-        B.print_tree(B.root)
-    
-   
+    # for i in range(100):
+    #     print(f"Deleting {i}")
+    #     B.delete(i)
+    #     B.print_tree(B.root)
+    # for i in range(100):
+    #     B.insertion((i, "o"))
+    #     print(f"Inserting {i}")
+    #     B.print_tree(B.root)
+
 if __name__ == '__main__':
     main()
