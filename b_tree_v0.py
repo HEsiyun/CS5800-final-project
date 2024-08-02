@@ -202,12 +202,13 @@ class BTree:
             return None
 
         # Otherwise, move to the appropriate child node
-        # Additional safe guard to prevent index out of range if i is out of bounds
+        # Make sure the recursive call is returned
         if i < len(x.child):
-            return self.search_key(k, x.child[i], x)
+            return self.search_key(k, x.child[i], x)  # Pass the current node as the parent
         else:
+            # If the index is out of bounds, it means the child does not exist, which should be an error state
+            print("Attempted to access non-existent child; this may indicate a problem in the tree structure.")
             return None
-    
 
     def get_parent(self, node, current=None, parent=None):
         '''
@@ -232,222 +233,104 @@ class BTree:
                     return found_parent
         return None
 
-    def remove(self, k:int, x=None, parent=None):
-        # A function to remove key k from the sub-tree rooted with this node
-        result = self.search_key(k, x, parent)
-        
-        if result is None:
-            print(f"The key {k} does not exist in the tree")
+    def delete(self, k, x=None):
+
+        if not x:
+            x = self.root
+        t = self.t
+        # Find the index of the key or the child which should have the key
+        result = self.searching(k, x) 
+        if result:
+            x, i = result
+        else:
+            print(f"Key {k} not found in the B-tree")
             return
-        index, target, parent = result
-        
-        if target.leaf:
-            print(f"Removing key {k} from leaf node")
-            self.remove_from_leaf(index, target, parent)
-        else:
-            print(f"Removing key {k} from non-leaf node")
-            self.remove_from_intetnal(index, target)
 
-
-    def remove_from_leaf(self, k, node:BTreeNode, parent:BTreeNode):
-        # A function to remove the k-th key from this node, which is a leaf node
-        node.keys.pop(k)
-        if not node.has_minimum_keys(self.t):
-            print(f"Node with keys {node.keys} has less than {self.t-1} keys")
-            sibling = node.sibling_type(parent)
-            if sibling == 0 and parent.child[parent.child.index(node) - 1].has_minimum_keys(self.t):
-                self.borrow_from_left(node, parent)
-                return
-                # If the left sibling has t-1 keys, merge with it
-            elif sibling == 0 and not parent.child[parent.child.index(node) - 1].has_minimum_keys(self.t):
-                self.merge_with_left(node, parent)
-                return
-            elif sibling == 1 and parent.child[parent.child.index(node) + 1].has_minimum_keys(self.t):
-                self.borrow_from_right(node, parent)
-                return
-                # If the right sibling has t-1 keys, merge with it
+        if x.leaf:
+            # If the key is in a leaf node and matches, remove it directly
+            if i < len(x.keys) and x.keys[i][0] == k:
+                x.keys.pop(i)
             else:
-                self.merge_with_right(node, parent)
-                return
+                print(f"Key {k} not found")
+            return
 
-    def borrow_from_left(self, node, parent):
-        '''
-        Function borrow_from_left
-        This function borrows a key from the left sibling of the node.
-        Parameters:
-        node -- the node to borrow a key into
-        parent -- the parent node of the node
-        '''
-        index = parent.child.index(node)
-        left_sibling = parent.child[index - 1]
-
-        # Pass largest key from left sibling to parent
-        node.keys.insert(0, parent.keys[index - 1])
-        # Pass largest key from parent to node
-        parent.keys[index - 1] = left_sibling.keys.pop()
-
-
-    def borrow_from_right(self, node, parent):
-        '''
-        Function borrow_from_right
-        This function borrows a key from the right sibling of the node.
-        Parameters:
-        node -- the node to borrow a key into
-        parent -- the parent node of the node
-        '''
-        index = parent.child.index(node)
-        right_sibling = parent.child[index + 1]
-
-        # Pass smallest key from right sibling to parent
-        node.keys.append(parent.keys[index])
-        # Pass largest key from parent to node
-        parent.keys[index] = right_sibling.keys.pop(0)
-
-
-    def merge_with_left(self, node, parent):
-        '''
-        Function merge_with_left
-        This function merges the node with its left sibling.
-        Parameters:
-        node -- the node to merge with its left sibling
-        parent -- the parent node of the node
-        '''
-        index = parent.child.index(node)
-        left_sibling = parent.child[index - 1]
-
-        # Pass the key from parent to left sibling
-        left_sibling.keys.append(parent.keys.pop(index - 1))
-        print(left_sibling.keys)
-
-        # Merge the keys and children from node to left sibling
-        left_sibling.keys.extend(node.keys)
-        print(left_sibling.keys)
-        if not node.leaf:
-            left_sibling.child.extend(node.child)
-
-        # Remove the merged node from parent's children
-        parent.child.pop(index)
-        if not parent.has_minimum_keys(self.t):
-            print(f"Parent with keys {parent.keys} has less than {self.t-1} keys")
-            self.borrow_from_leaf_when_parent_sibling_all_have_minimal_keys(parent)
-        
-
-    def merge_with_right(self, node, parent):
-        '''
-        Function merge_with_right
-        This function merges the node with its right sibling.
-        Parameters:
-        node -- the node to merge with its right sibling
-        parent -- the parent node of the node
-        '''
-        
-        index = parent.child.index(node)
-        right_sibling = parent.child[index + 1]
-
-        # Pass the key from parent to node
-        node.keys.append(parent.keys.pop(index))
-
-        # Merge the keys and children from right sibling to node
-        node.keys.extend(right_sibling.keys)
-        if not node.leaf:
-            node.child.extend(right_sibling.child)
-
-        # Remove the merged node from parent's children
-        parent.child.pop(index + 1)
-        if not parent.has_minimum_keys(self.t):
-            print(f"Parent with keys {parent.keys} has less than {self.t-1} keys")
-            self.borrow_from_leaf_when_parent_sibling_all_have_minimal_keys(parent)
-
-    def borrow_from_leaf_when_parent_sibling_all_have_minimal_keys(self, parent:BTreeNode):
-        '''
-        Function borrow_from_leaf_when_parent_sibling_all_have_minimal_keys
-        This function handles the case where both the parent and siblings have minimal keys by recursively
-        finding a node with more than minimal keys.
-        Parameters:
-        k -- the key to remove
-        node -- the current node (leaf) from which the key is to be removed
-        parent -- the parent node of the current node
-        '''
-        grandparent = None
-        current_node = parent
-        current_parent = None
-
-        # Traverse up the tree to find a suitable node with more than minimal keys
-        while current_node is not None and current_node.has_minimum_keys(self.t):
-            current_parent = self.get_parent(current_node)
-            grandparent = current_node
-            current_node = current_parent
-
-        # If a suitable node is found, borrow from it
-        if current_node is not None and not current_node.has_minimum_keys(self.t):
-            if current_parent is not None:
-                sibling_type = grandparent.sibling_type(current_parent)
-                if sibling_type == 0:
-                    self.borrow_from_left(grandparent, current_parent)              
-
-    def remove_from_intetnal(self, k:int, node:BTreeNode):
-        # A function to remove the index-th key from this node, which is a non-leaf node
-        node.keys.pop(k)
-        left_child = node.child[k]
-        right_child = node.child[k + 1]
-
-        if left_child.has_minimum_keys(self.t):
-            self.borrow_from_left_predecessor(k, node)
-        elif right_child.has_minimum_keys(self.t):
-            self.borrow_from_right_successor(k, node)
+        # Key is not in leaf, handle internal node case
+        if i < len(x.keys) and x.keys[i][0] == k:
+            # Key is present at the internal node
+            if len(x.child[i].keys) >= t:
+                x.keys[i] = self.delete_predecessor(x.child[i])
+            elif len(x.child[i + 1].keys) >= t:
+                x.keys[i] = self.delete_successor(x.child[i + 1])
+            else:
+                self.merge_nodes(x, i)
+                # After merging, the key count decreases, continue deletion on the merged node
+                if i < len(x.child):
+                    self.delete(k, x.child[i])
         else:
-            self.merge_two_children(k, node)
-            self.borrow_from_leaf_when_parent_sibling_all_have_minimal_keys(node)
+            # Key is not found, proceed with the child node that should contain the key
+            if len(x.child[i].keys) < t:
+                self.rebalance_before_delete(x, i)
+            # Ensure the child index still exists after potential rebalancing
+            if i >= len(x.child):
+                i -= 1
+            self.delete(k, x.child[i])
 
+    def delete_internal_node(self, x, k, i):
+        if len(x.child[i].keys) >= self.t:
+            x.keys[i] = self.delete_predecessor(x.child[i])
+        elif len(x.child[i + 1].keys) >= self.t:
+            x.keys[i] = self.delete_successor(x.child[i + 1])
+        else:
+            self.merge_nodes(x, i)
+            self.delete(x.child[i], k)
 
-    def borrow_from_left_predecessor(self, k, node:BTreeNode):
-        # A function to borrow the predecessor of the key from the left child of the key
-        left_child = node.child[k]
-        predecessor = left_child.keys[-1]
-        
-        # Move the key down from the node to the right child
-        node.child[k + 1].keys.insert(0, node.keys[k])
-        # Move the predecessor up to the node
-        node.keys[k] = predecessor
-        
-        # Remove the predecessor from the left child
-        left_child.keys.pop()
-    
-    def borrow_from_right_successor(self, k, node):
-        '''
-        A function to borrow the successor of the key from the right child of the key.
-        '''
-        right_child = node.child[k + 1]
-        successor = right_child.keys[0]
-        
-        # Move the key down from the node to the left child
-        node.child[k].keys.append(node.keys[k])
-        # Move the successor up to the node
-        node.keys[k] = successor
-        
-        # Remove the successor from the right child
-        right_child.keys.pop(0)
+    def delete_predecessor(self, x):
+        if x.leaf:
+            return x.keys.pop()
+        return self.delete_predecessor(x.child[-1])
 
-    def merge_two_children(self, k, node):
-        '''
-        A function to merge the children of the node.
-        '''
-        left_child = node.child[k]
-        right_child = node.child[k + 1]
-        
-        # Append the key from the node to the left child
-        #left_child.keys.append(node.keys[k])
-        
-        # Merge the keys from the right child to the left child
+    def delete_successor(self, x):
+        if x.leaf:
+            return x.keys.pop(0)
+        return self.delete_successor(x.child[0])
+
+    def rebalance_before_delete(self, x, idx):
+        t = self.t
+        if idx > 0 and len(x.child[idx - 1].keys) >= t:
+            self.borrow_from_left(x, idx)
+        elif idx < len(x.child) - 1 and len(x.child[idx + 1].keys) >= t:
+            self.borrow_from_right(x, idx)
+        else:
+            # Merge with left sibling if possible, otherwise with right sibling
+            if idx > 0:
+                self.merge_nodes(x, idx - 1)
+            else:
+                self.merge_nodes(x, idx)
+
+    def borrow_from_left(self, x, idx):
+        left_sibling = x.child[idx - 1]
+        current_node = x.child[idx]
+        current_node.keys.insert(0, x.keys[idx - 1])
+        x.keys[idx - 1] = left_sibling.keys.pop()
+        if not current_node.leaf:
+            current_node.child.insert(0, left_sibling.child.pop())
+
+    def borrow_from_right(self, x, idx):
+        right_sibling = x.child[idx + 1]
+        current_node = x.child[idx]
+        current_node.keys.append(x.keys[idx])
+        x.keys[idx] = right_sibling.keys.pop(0)
+        if not current_node.leaf:
+            current_node.child.append(right_sibling.child.pop(0))
+
+    def merge_nodes(self, x, idx):
+        left_child = x.child[idx]
+        right_child = x.child[idx + 1]
+        left_child.keys.append(x.keys.pop(idx))
         left_child.keys.extend(right_child.keys)
-        # if not right_child.leaf:
-        #     left_child.child.extend(right_child.child)
-
-        # # Remove the key and right child from the node
-        # node.keys.pop(k)
-        node.child.pop(k + 1)
-    
-
+        if not left_child.leaf:
+            left_child.child.extend(right_child.child)
+        x.child.pop(idx + 1)
     # Print the tree
     def print_tree(self, x, l=0, prefix=""):
         '''
@@ -510,16 +393,16 @@ class BTree:
 
 
 def main():
-    B = BTree(3)
+    B = BTree(2)
 
-    for i in range(80):
+    for i in range(30):
         B.insertion((i, "o"))
     
     
     B.print_tree(B.root)
 
     # Search for the specific key
-    search_value = 77
+    search_value = 11
     result = B.searching(search_value)
     if result is not None:
         node, index = result
@@ -528,57 +411,21 @@ def main():
         print(f"Key {search_value} not found in the B-tree.")
 
     # Search for the specific key
-    # search_value = 10
-    # search_key = (search_value)  # Ensure you're searching for the entire tuple
-    # result = B.search_key(search_key)
-    # if result is not None:
-    #     index, node, parent = result
-    #     #found_key = node.keys[index]  # Get only the specific key
-    #     # print(f"Key {search_key} found at index {index} with data: {found_key}")
-    #     print(f"Key {search_key} found in node with keys: {node.keys[index]} at index {index}, parent is {parent.keys}")
-    # else:
-    #     print(f"Key {search_key} not found in the B-tree.")
-
-    # B.remove(30)
-    # B.print_tree(B.root)
-    # print('-' * 50)
-    # B.remove(31)
-    # B.print_tree(B.root)
-    # print('-' * 50)
-    # B.remove(33)
-    # B.print_tree(B.root)
-    # B.remove(34)
-    # B.print_tree(B.root)
-    # B.remove(18)
-    # B.print_tree(B.root)
-    # B.remove(24)
-    # B.print_tree(B.root)
-    # B.remove(25)
-    # B.print_tree(B.root)
-    # B.remove(32)
-    # B.print_tree(B.root)
-    # B.remove(29)
-    # B.print_tree(B.root)
-    # B.remove(28)
-    # B.print_tree(B.root)
-    # B.remove(27)
-    # B.print_tree(B.root)
-    # B.remove(0)
-    # B.print_tree(B.root)
-    # B.remove(4)
-    # B.print_tree(B.root)
-    # B.remove(13)
-    # B.print_tree(B.root)
+    search_value = 21
+    search_key = (search_value)  # Ensure you're searching for the entire tuple
+    result = B.search_key(search_key)
+    if result is not None:
+        index, node, parent = result
+        #found_key = node.keys[index]  # Get only the specific key
+        # print(f"Key {search_key} found at index {index} with data: {found_key}")
+        print(f"Key {search_key} found in node with keys: {node.keys[index]} at index {index}, parent is {parent.keys}")
+    else:
+        print(f"Key {search_key} not found in the B-tree.")
+    for i in range(0, 31):
+        print(f"Deleting {i}")
+        B.delete(i)
+        B.print_tree(B.root)
     
-
-
-    B.remove(68)
-
-    #B.print_tree(B.root)
-    
-    #B.remove(3)
-    #B.remove(26)
-    #B.print_tree(B.root)
-
+   
 if __name__ == '__main__':
     main()
