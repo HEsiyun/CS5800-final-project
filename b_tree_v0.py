@@ -33,39 +33,6 @@ class BTreeNode:
         self.leaf = leaf
         self.keys = []  # This will store tuples
         self.child = []
-    
-    def has_minimum_keys(self, t: int):
-        '''
-        Function has_minimum_keys
-        This function checks if a node contains the minimum number of keys.
-        Parameters:
-        node -- the node to check
-        Returns True if the node contains at least t-1 keys, False otherwise
-        '''
-        return len(self.keys) > t-1
-
-    def sibling_type(self, parent):
-        '''
-        Function sibling_type
-        This function determines if the current node has a left or right sibling.
-        Parameters:
-        parent -- the parent node of the current node
-        Returns 0 if there is a left sibling, 1 if there is a right sibling, -1 if no siblings are found
-        '''
-        if parent is None:
-            return -1
-     
-        # Find the index of the current node in the parent's children list
-        index = parent.child.index(self)
-        
-        # Check for left sibling
-        if index > 0:
-            return 0
-        # Check for right sibling
-        elif index < len(parent.child) - 1:
-            return 1
-        else:
-            return -1
 
 class BTree:
     '''
@@ -198,32 +165,19 @@ class BTree:
 
         if x.leaf:
             # If the key is in a leaf node and matches, remove it directly
-            if i < len(x.keys) and x.keys[i][0] == k:
-                x.keys.pop(i)
-            else:
-                print(f"Key {k} not found")
+            x.keys.pop(i)
             return
 
         # Key is not in leaf, handle internal node case
-        if i < len(x.keys) and x.keys[i][0] == k:
-            # Key is present at the internal node
-            if len(x.child[i].keys) >= t:
-                x.keys[i] = self.delete_predecessor(x.child[i])
-            elif len(x.child[i + 1].keys) >= t:
-                x.keys[i] = self.delete_successor(x.child[i + 1])
-            else:
-                self.merge_nodes(x, i)
-                # After merging, the key count decreases, continue deletion on the merged node
-                if i < len(x.child):
-                    self.delete(k, x.child[i])
+        if len(x.child[i].keys) >= t:
+            x.keys[i] = self.delete_predecessor(x.child[i])
+        elif len(x.child[i + 1].keys) >= t:
+            x.keys[i] = self.delete_successor(x.child[i + 1])
         else:
-            # Key is not found, proceed with the child node that should contain the key
-            if len(x.child[i].keys) < t:
-                self.rebalance_before_delete(x, i)
-            # Ensure the child index still exists after potential rebalancing
-            if i >= len(x.child):
-                i -= 1
-            self.delete(k, x.child[i])
+            self.merge_nodes(x, i)
+            # After merging, the key count decreases, continue deletion on the merged node
+            if i < len(x.child):
+                self.delete(k, x.child[i])
 
 
     def delete_predecessor(self, x):
@@ -245,14 +199,15 @@ class BTree:
         and removes the successor, ensuring the node meets the B-tree properties.
         """
         # Traverse until a leaf is found
-        while not x.leaf:
-            if len(x.child[0].keys) < self.t:
-                # Ensure the child has enough keys, rebalance if necessary
-                self.rebalance_before_delete(x, 0)
-            x = x.child[0]
+        if x.leaf:
+            return x.keys.pop(0)
 
-        # Now x is a leaf, return and remove the first key
-        return x.keys.pop(0)
+    # Recursive case: Ensure the first child has enough keys, rebalance if necessary
+        if len(x.child[0].keys) < self.t:
+            self.rebalance_before_delete(x, 0)
+
+        # Recur on the first child
+        return self.delete_successor(x.child[0])
 
     def rebalance_before_delete(self, x, idx):
         '''
@@ -345,20 +300,20 @@ class BTree:
 
 
 def main():
-    B = BTree(32)
+    B = BTree(2)
     
-    for i in range(8000):
+    for i in range(20):
         B.insertion((i, "o"))
     print("construction done")
     B.print_tree(B.root)
-    for i in range(25):
-        # print(f"Deleting {i}")
+    for i in range(10):
+        print(f"Deleting {i}")
         B.delete(i)
-    print("deletion done")
-    B.print_tree(B.root)
-    for i in range(25):        
-        B.insertion((i, "o"))
-    B.print_tree(B.root)
+    # print("deletion done")
+        B.print_tree(B.root)
+    # for i in range(25):        
+    #     B.insertion((i, "o"))
+    # B.print_tree(B.root)
        
         
     
