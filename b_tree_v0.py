@@ -167,14 +167,15 @@ class BTree:
             # If the key is in a leaf node and matches, remove it directly
             x.keys.pop(i)
             return
-
         # Key is not in leaf, handle internal node case
         if len(x.child[i].keys) >= t:
+            
             x.keys[i] = self.delete_predecessor(x.child[i])
         elif len(x.child[i + 1].keys) >= t:
             x.keys[i] = self.delete_successor(x.child[i + 1])
         else:
             self.merge_nodes(x, i)
+            
             # After merging, the key count decreases, continue deletion on the merged node
             if i < len(x.child):
                 self.delete(k, x.child[i])
@@ -191,6 +192,12 @@ class BTree:
         '''
         if x.leaf:
             return x.keys.pop()
+
+    # Recursive case: Ensure the last child has enough keys, rebalance if necessary
+        if len(x.child[-1].keys) < self.t:
+            self.rebalance_before_delete(x, len(x.child) - 1)
+
+        # Recur on the last child
         return self.delete_predecessor(x.child[-1])
 
     def delete_successor(self, x):
@@ -201,7 +208,6 @@ class BTree:
         # Traverse until a leaf is found
         if x.leaf:
             return x.keys.pop(0)
-
     # Recursive case: Ensure the first child has enough keys, rebalance if necessary
         if len(x.child[0].keys) < self.t:
             self.rebalance_before_delete(x, 0)
@@ -300,17 +306,29 @@ class BTree:
 
 
 def main():
-    B = BTree(2)
+    B = BTree(3)
     
-    for i in range(20):
+    for i in range(80):
         B.insertion((i, "o"))
     print("construction done")
     B.print_tree(B.root)
-    for i in range(10):
-        print(f"Deleting {i}")
-        B.delete(i)
+    # for i in range(10):
+    #     print(f"Deleting {i}")
+    
+    B.delete(53)
+    
+    B.print_tree(B.root)
+    B.delete(44)
+    B.print_tree(B.root)
+    
+    # for i in range(61, 200):
+    #     B.insertion((i, "o"))
+    # B.insertion((1, "o"))
+    # B.insertion((20, "o"))
+    # B.insertion((21, "o"))
+    
     # print("deletion done")
-        B.print_tree(B.root)
+    # B.print_tree(B.root)
     # for i in range(25):        
     #     B.insertion((i, "o"))
     # B.print_tree(B.root)
