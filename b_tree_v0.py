@@ -108,10 +108,10 @@ class BTree:
         t = self.t
         left_child = x.child[i]
         right_child = BTreeNode(left_child.leaf)
+        
         x.child.insert(i + 1, right_child)
         x.keys.insert(i, left_child.keys[t - 1])
 
-        # Split the keys and children of y into y and z
         right_child.keys = left_child.keys[t: (2 * t) - 1]
         left_child.keys = left_child.keys[:t - 1]
 

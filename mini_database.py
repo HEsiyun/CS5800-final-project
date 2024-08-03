@@ -80,6 +80,7 @@ def insert_driver(data, user_defined_key):
         new_row[column_name[i]] = values[i]
     data = data.append(new_row, ignore_index=True)
     return data, new_key, row_number
+    
 def delete_driver(data, btree, user_defined_key):
     '''
     Function delete_driver
@@ -132,8 +133,8 @@ def mini_database():
                 if crud_choice not in ['1', '2', '3', '4']:
                     raise ValueError("Invalid choice")
             except ValueError as error:
-                print("Invalid value:", error)
-
+                print("Invalid value:", error, "Please enter a valid choice.")
+                continue
             if crud_choice == '1':
                 data, new_key, row_number = insert_driver(data, user_defined_key)
                 # Display the new dataframe
@@ -185,7 +186,8 @@ def mini_database():
                 if crud_choice not in ['1', '2', '3', '4']:
                     raise ValueError("Invalid choice")
             except ValueError as error:
-                print("Invalid value:", error)
+                print("Invalid value:", error, "Please enter a valid choice.")
+                continue
 
             if crud_choice == '1':
                 data, new_key, row_number = insert_driver(data, user_defined_key)
@@ -203,6 +205,9 @@ def mini_database():
                 btree.print_tree(btree.root)
                 btree.visualize()
             elif crud_choice == '2':
+                if btree is None:
+                    print("Database is empty. Please insert data first before searching.")
+                    continue
                 # ask the user if they want to search for a key
                 search_driver(data, btree)
             elif crud_choice == '3':
@@ -222,6 +227,9 @@ def mini_database():
                 # for key in keys:
                 #     btree.insertion(key)
                 # btree.print_tree(btree.root)
+                if btree is None:
+                    print("Database is empty. Please insert data first before deleting.")
+                    continue
                 data, btree = delete_driver(data, btree, user_defined_key)
             else:
                 break
