@@ -225,22 +225,6 @@ class BTree:
                 i -= 1
             self.delete(k, x.child[i])
 
-    def delete_internal_node(self, x, k, i):
-        '''
-        Function delete_internal_node
-        This function deletes a key from an internal node.
-        Parameters:
-        x -- the parent node
-        k -- the key to delete
-        i -- the index of the key in the parent node
-        '''
-        if len(x.child[i].keys) >= self.t:
-            x.keys[i] = self.delete_predecessor(x.child[i])
-        elif len(x.child[i + 1].keys) >= self.t:
-            x.keys[i] = self.delete_successor(x.child[i + 1])
-        else:
-            self.merge_nodes(x, i)
-            self.delete(x.child[i], k)
 
     def delete_predecessor(self, x):
         '''
@@ -278,17 +262,10 @@ class BTree:
         x -- the parent node
         idx -- the index of the child node to rebalance
         '''
-        t = self.t
-        if idx > 0 and len(x.child[idx - 1].keys) >= t:
-            self.borrow_from_left(x, idx)
-        elif idx < len(x.child) - 1 and len(x.child[idx + 1].keys) >= t:
-            self.borrow_from_right(x, idx)
+        if idx > 0:
+            self.merge_nodes(x, idx - 1)
         else:
-            # Merge with left sibling if possible, otherwise with right sibling
-            if idx > 0:
-                self.merge_nodes(x, idx - 1)
-            else:
-                self.merge_nodes(x, idx)
+            self.merge_nodes(x, idx)
 
     def merge_nodes(self, x, idx):
         '''
@@ -368,21 +345,32 @@ class BTree:
 
 
 def main():
-    B = BTree(8)
-
-    for i in range(50):
+    B = BTree(32)
+    
+    for i in range(8000):
         B.insertion((i, "o"))
-
-        B.print_tree(B.root)
+    print("construction done")
+    B.print_tree(B.root)
+    for i in range(25):
+        # print(f"Deleting {i}")
+        B.delete(i)
+    print("deletion done")
+    B.print_tree(B.root)
+    for i in range(25):        
+        B.insertion((i, "o"))
+    B.print_tree(B.root)
+       
+        
+    
 
     # Search for the specific key
-    search_value = 11
-    result = B.searching(search_value)
-    if result is not None:
-        node, index = result
-        print(f"Key {search_value} found in node with keys: {node.keys[index]} at index {index}")
-    else:
-        print(f"Key {search_value} not found in the B-tree.")
+    # search_value = 11
+    # result = B.searching(search_value)
+    # if result is not None:
+    #     node, index = result
+    #     print(f"Key {search_value} found in node with keys: {node.keys[index]} at index {index}")
+    # else:
+    #     print(f"Key {search_value} not found in the B-tree.")
 
     # for i in range(100):
     #     print(f"Deleting {i}")
