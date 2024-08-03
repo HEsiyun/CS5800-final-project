@@ -20,7 +20,7 @@ def search_driver(data, btree):
         print(f"The key {key} is not found in the BTree")
     # get the row from the dataframe using the row number
     row_number = node.keys[index][1]
-    row = data[data['row_number'] == row_number]
+    row = data.iloc[row_number]
     print(row)
 
 def import_driver():
