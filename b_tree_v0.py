@@ -39,7 +39,7 @@ class BTree:
     class Btree
     This class represents a B tree. It has the following attributes: root and minimum degree. The class has the following methods:
     - insertion: insert a key into the B tree
-    - insert_non_full: insert a key into a non-full node
+    - insert_none_full: insert a key into a non-full node
     - split_child: split a child node
     - search_key: search for a key in the B tree
     - print_tree: print the B tree
@@ -62,13 +62,13 @@ class BTree:
             temp.child.insert(0, self.root)
             self.split_child(temp, 0)
             self.root = temp  # Update root
-            self.insert_non_full(self.root, k)
+            self.insert_none_full(self.root, k)
         else:
-            self.insert_non_full(root, k)
+            self.insert_none_full(root, k)
 
-    def insert_non_full(self, x, k):
+    def insert_none_full(self, x, k):
         '''
-        Function insert_non_full
+        Function insert_none_full
         This function inserts a key into a non-full node.
         Parameters:
         x -- the node to insert the key
@@ -95,7 +95,7 @@ class BTree:
                     i += 1
 
             # Recursively insert the key in the child node
-            self.insert_non_full(x.child[i], k)
+            self.insert_none_full(x.child[i], k)
 
     def split_child(self, x, i):
         '''
