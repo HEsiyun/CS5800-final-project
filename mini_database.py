@@ -75,10 +75,14 @@ def insert_driver(data, user_defined_key):
         values.append(value)
 
     # add the new row to the end of the dataframe
-    new_row = pd.DataFrame({user_defined_key: [new_key], 'row_number': [row_number]})
+    rows = []
+    new_row = {user_defined_key: new_key, 'row_number': row_number}
     for i in range(len(column_name)):
         new_row[column_name[i]] = values[i]
-    data = data.append(new_row, ignore_index=True)
+    rows.append(new_row)
+    new_data = pd.DataFrame(rows)
+    data = pd.concat([data, new_data], ignore_index=True)
+    
     return data, new_key, row_number
     
 def delete_driver(data, btree, user_defined_key):
@@ -126,7 +130,7 @@ def mini_database():
     if choice == 1:
         data, btree, user_defined_key = import_driver()
        
-        # ask user if they want to insert, search, update, delete or exit
+        # ask user if they want to insert, search, delete or exit
         while True:
             try:
                 crud_choice = input("Do you want to insert, search, delete or exit? (1 to insert, 2 to search, 3 to delete, 4 to exit): ")
@@ -179,7 +183,7 @@ def mini_database():
         data = pd.DataFrame(columns=column_names)
         user_defined_key = choose_index(data)
         data = add_row_number(data)
-        # ask user if they want to insert, search, update, delete or exit
+        # ask user if they want to insert, search, delete or exit
         while True:
             try:
                 crud_choice = input("Do you want to insert, search, delete or exit? (1 to insert, 2 to search, 3 to delete, 4 to exit): ")
