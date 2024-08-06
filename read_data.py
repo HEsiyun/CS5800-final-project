@@ -17,12 +17,9 @@ def read_in_data() -> pd.DataFrame:
     This function reads the data from an excel file by taking user input filepath and filename.
     Returns the dataframe of the data.
     '''
-    try:
-        filepath = input("Please enter the data file path and name: ")
-    except IndexError:
-        print("Please enter correct data file path and name")
-        return
-    
+    filepath = input("Please enter the data file path and name(default name:data/data_with_grade.xlsx): ")
+    if filepath == "":
+        filepath = "data/data_with_grade.xlsx"
     try:
         data = pd.read_excel(filepath)
         data = data.convert_dtypes()
