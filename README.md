@@ -1,6 +1,10 @@
 # Mini-database User Guide
 The main functionalities of the mini-database are insert, search, and delete. This mini-database implements a B-tree to manage user-defined indexes, enabling efficient search, insertion, and deletion. A Pandas DataFrame is also used to store and display data to the users.
 
+First, install all libraries required by mini-database:
+```
+pip install -r requirements.txt
+```
 Call the mini-database in the terminal by typing: 
 ```
 python mini_database.py
