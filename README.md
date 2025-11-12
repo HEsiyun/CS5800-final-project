@@ -28,7 +28,7 @@ The system supports **insertion**, **search**, and **deletion** of records, offe
 - Allows user-defined keys and B-Tree degrees for full control.  
 
 <p align="center">
-  <img src="images/flowchart-larger-font.png" width="600" alt="Mini-Database Flowchart"/>
+  <img src="flowchart-larger-font.png" width="600" alt="Mini-Database Flowchart"/>
 </p>
 
 ---
