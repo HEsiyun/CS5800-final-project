@@ -1,4 +1,9 @@
 # 🌳 Mini-Database with B-Trees  
+[![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)  
+[![Data Structure](https://img.shields.io/badge/Data%20Structure-B--Tree-green)](https://en.wikipedia.org/wiki/B-tree)  
+[![Framework](https://img.shields.io/badge/Framework-Jupyter%20%7C%20Matplotlib-orange)](https://jupyter.org/)  
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  
+
 > Efficient Data Management and CRUD Operations for Student Records  
 
 ---
@@ -28,14 +33,14 @@ The system supports **insertion**, **search**, and **deletion** of records, offe
 - Allows user-defined keys and B-Tree degrees for full control.  
 
 <p align="center">
-  <img src="flowchart-larger-font.png" width="600" alt="Mini-Database Flowchart"/>
+  <img src="flowchart-larger-fontf.png" width="600" alt="Mini-Database Flowchart"/>
 </p>
 
 ---
 
 ## ⚙️ System Architecture  
 
-### 🏧 Initialization
+### 🏗️ Initialization
 - The user selects a **unique key column** (e.g., `student_id` or `student_name`).
 - Defines the **maximum degree (m)** of the B-Tree.  
 - Data can be loaded from Excel or created manually.
@@ -53,7 +58,7 @@ The system supports **insertion**, **search**, and **deletion** of records, offe
 - Supports deletion of leaf and internal keys with recursive rebalancing.  
 - Handles merges and redistributions while maintaining B-Tree properties.  
 
-### 📊 Visualization
+### 📈 Visualization
 - Two-layer rendering:
   - **NetworkX** draws nodes and edges.
   - **Matplotlib** overlays labels for a clean structural display.  
@@ -61,7 +66,7 @@ The system supports **insertion**, **search**, and **deletion** of records, offe
 
 ---
 
-## 🪮 Example Workflow  
+## 🧮 Example Workflow  
 
 ```bash
 # 1️⃣ Import Data
@@ -113,12 +118,12 @@ The system supports **insertion**, **search**, and **deletion** of records, offe
 
 - ✏️ Add **Update** operation for record modification.  
 - 🌲 Extend implementation to **B+ Tree** for improved range queries and leaf-level data management.  
-- 💮 Explore **transactional scalability** and concurrent operations.  
-- 🥪 Implement optimized **deletion propagation** and self-balancing routines.  
+- 💾 Explore **transactional scalability** and concurrent operations.  
+- 🧪 Implement optimized **deletion propagation** and self-balancing routines.  
 
 ---
 
-## 🧮 Tech Stack  
+## 🧰 Tech Stack  
 
 - **Python 3.10**  
 - **pandas** – Data handling  
@@ -154,6 +159,19 @@ Course: **CS 5800 – Algorithms** (Summer 2024)
 
 ---
 
+## 🌟 Citation  
+
+```
+@report{he2024btree,
+  title={Efficient Data Management with B-Trees: A Mini-Database Implementation},
+  author={Siyun He and Bo Pang and Jin Zhang},
+  year={2024},
+  institution={Northeastern University, Vancouver}
+}
+```
+
+---
+
 ## 💬 Acknowledgments  
 
 - [GeeksforGeeks: B-Tree Tutorials](https://www.geeksforgeeks.org/introduction-of-b-tree-2/)  
@@ -171,5 +189,5 @@ It demonstrates not just how B-Trees work—but how they *feel* to use: balanced
 
 ---
 
-🌟 **If you find this project useful, please give it a star on GitHub!**
+⭐ **If you find this project useful, please give it a star on GitHub!**
 
