@@ -1,36 +1,188 @@
-# Mini-database User Guide
-The main functionalities of the mini-database are insert, search, and delete. This mini-database implements a B-tree to manage user-defined indexes, enabling efficient search, insertion, and deletion. A Pandas DataFrame is also used to store and display data to the users.
+# 🌳 Mini-Database with B-Trees  
+> Efficient Data Management and CRUD Operations for Student Records  
 
-First, install all libraries required by mini-database:
+---
+
+## 📘 Overview  
+
+This project implements a **mini-database system using B-Trees** to manage student records efficiently.  
+It was developed as part of **CS5800 (Summer 2024)** at Northeastern University under the guidance of **Professor Aanchan Mohan**.
+
+The system supports **insertion**, **search**, and **deletion** of records, offering a hands-on demonstration of how B-Trees maintain balance and speed in large datasets.  
+
+> **Goal:** Bridge theory and practice by implementing a working B-Tree from scratch for fast, scalable student data management.
+
+---
+
+## 🧩 Core Features  
+
+### 🌱 Balanced B-Tree Implementation  
+- Maintains logarithmic height with every operation.  
+- Guarantees efficient data retrieval even as the dataset grows.  
+- Each node dynamically holds multiple keys and children for optimal I/O performance.  
+
+### 📂 Mini-Database System  
+- Supports **Import from Excel** or **Generate from Scratch** workflows.  
+- Integrates with **pandas DataFrame** for structured data handling.  
+- Provides **real-time B-Tree visualization** via **NetworkX** and **Matplotlib**.  
+- Allows user-defined keys and B-Tree degrees for full control.  
+
+<p align="center">
+  <img src="images/flowchart.png" width="600" alt="Mini-Database Flowchart"/>
+</p>
+
+---
+
+## ⚙️ System Architecture  
+
+### 🏧 Initialization
+- The user selects a **unique key column** (e.g., `student_id` or `student_name`).
+- Defines the **maximum degree (m)** of the B-Tree.  
+- Data can be loaded from Excel or created manually.
+
+### ➕ Insertion
+- Uses **preemptive splitting** instead of reactive splitting for better efficiency.  
+- Achieves **O(log n)** time complexity per insert operation.  
+
+### 🔍 Search
+- Implements an iterative `search_key()` method for fast lookups.  
+- Returns both the node and key index, linking directly to the record in the DataFrame.  
+- Logarithmic time complexity ensures stable performance.  
+
+### ❌ Deletion
+- Supports deletion of leaf and internal keys with recursive rebalancing.  
+- Handles merges and redistributions while maintaining B-Tree properties.  
+
+### 📊 Visualization
+- Two-layer rendering:
+  - **NetworkX** draws nodes and edges.
+  - **Matplotlib** overlays labels for a clean structural display.  
+- Each node’s keys are shown in blue boxes with hierarchical spacing.  
+
+---
+
+## 🪮 Example Workflow  
+
+```bash
+# 1️⃣ Import Data
+> database_with_grade.xlsx
+# Choose unique key: student_id
+# Choose max degree: 6
+
+# 2️⃣ Visualize B-Tree
+> B-Tree plotted using matplotlib
+
+# 3️⃣ Insert New Record
+> Enter values for columns: ID, Name, Grade
+> Record successfully inserted (O(log n) complexity)
+
+# 4️⃣ Search Record
+> Enter key to search: 12345
+> Record found in 0.002s
+
+# 5️⃣ Delete Record
+> Enter key to delete: 12345
+> Tree rebalanced successfully
 ```
-pip install -r requirements.txt
+
+---
+
+## 📊 Performance & Comparison  
+
+| Operation | Time Complexity | Notes |
+|------------|------------------|-------|
+| **Insert** | O(log n) | Preemptive splitting keeps height minimal |
+| **Search** | O(log n) | Multi-key nodes minimize traversal depth |
+| **Delete** | O(log n) average | Rebalancing ensures structure consistency |
+| **BST (for comparison)** | O(n) worst case | Easily degrades when unbalanced |
+
+> Compared to Binary Search Trees (BSTs), the B-Tree guarantees consistent logarithmic performance regardless of insertion order.
+
+---
+
+## 🧠 Key Insights  
+
+- **Preemptive splitting** improves constant factors in insertion performance.  
+- **Pandas integration** provides efficient in-memory data retrieval using `.iloc`.  
+- **Visualization** plays a crucial role in debugging and validating structure.  
+- **Deletion complexity** reveals the trade-off between structural balance and implementation effort.  
+
+---
+
+## 🧩 Future Work  
+
+- ✏️ Add **Update** operation for record modification.  
+- 🌲 Extend implementation to **B+ Tree** for improved range queries and leaf-level data management.  
+- 💮 Explore **transactional scalability** and concurrent operations.  
+- 🥪 Implement optimized **deletion propagation** and self-balancing routines.  
+
+---
+
+## 🧮 Tech Stack  
+
+- **Python 3.10**  
+- **pandas** – Data handling  
+- **NetworkX & Matplotlib** – Tree visualization  
+- **Jupyter Notebook** – Code testing and analysis  
+- **Excel I/O** – Data import/export  
+
+---
+
+## 📂 Project Structure  
+
 ```
-Call the mini-database in the terminal by typing: 
+CS5800-final-project/
+├── b_tree_v0.py             # Core B-Tree implementation
+├── data/                    # Excel files & generated data
+├── data_generation.py       # Synthetic data creation
+├── read_data.py             # Data import helpers
+├── mini_database.py         # Integrated CRUD interface
+├── visualization/           # Matplotlib + NetworkX visualizations
+└── report/                  # Final report (PDF)
 ```
-python mini_database.py
+
+---
+
+## 🎓 Authors  
+
+**Siyun He** – Insertion Logic, Data Import, Visualization  
+**Bo Pang** – Deletion Logic, Error Handling  
+**Jin Zhang** – Search Implementation, Analysis  
+
+Instructor: **Prof. Aanchan Mohan**  
+Course: **CS 5800 – Algorithms** (Summer 2024)
+
+---
+
+## 🌟 Citation  
+
 ```
-## Initialization
-When the database is completely empty, the users have 2 choices to initialize the databse:
+@report{he2024btree,
+  title={Efficient Data Management with B-Trees: A Mini-Database Implementation},
+  author={Siyun He and Bo Pang and Jin Zhang},
+  year={2024},
+  institution={Northeastern University, Vancouver}
+}
+```
 
-**Choice 1**: Import an existing excel data. Default file path is "data/data_with_grade.xlsx", but the users can enter their own file path. 
+---
 
-**Choice 2**: Generate data by entering column names and the corresponding values.
+## 💬 Acknowledgments  
 
-## Max Degree and Btree Key
-After we have some data inside the mini-database, the users can choose a unique column from the dataframe to be the key of the Btree. The users can also choose a maximum degree of the Btree, which is the maximum number of children of each node. The maximum degree must be an even number larger than 3.
+- [GeeksforGeeks: B-Tree Tutorials](https://www.geeksforgeeks.org/introduction-of-b-tree-2/)  
+- [Let’s Build a Simple Database – cstack.github.io](https://cstack.github.io/db_tutorial/parts/part7.html)  
+- [NetworkX Visualization Examples – Rossano Venturini](https://github.com/rossanoventurini/adsds)  
 
-## Basic Operations 
-The users are given the choices of insert, search, delete, or exit (1 to insert, 2 to search, 3 to delete, 4 to exit).
+---
 
-## Print and Visualization
-After the user adds (including inserting, importing, or generating data from scratch) or deletes data from the mini-database, the structure of the B-tree will be printed, and the B-tree will be plotted in a popup window.
+## 🚀 Summary  
 
-# References 
-[1] “Part 7 - introduction to the B-tree,” Let’s Build a Simple Database, https://cstack.github.io/db_tutorial/parts/part7.html (accessed Aug. 3, 2024). <p>
-[2] Lecture 10 - insertion into a B-tree, https://webdocs.cs.ualberta.ca/~holte/T26/ins-b-tree.html (accessed Aug. 3, 2024). <p> 
-[3] J. Kubica, Data Structures the Fun Way: From Binary Search to Quadtrees in 100 Cups of Coffee. San Francisco, CA: No Starch Press, Inc, 2022. <p>
-[4] “Introduction of B-tree,” GeeksforGeeks, https://www.geeksforgeeks.org/introduction-of-b-tree-2/ (accessed Jul. 12, 2024). <p>
-[5] “Understanding B-trees: The data structure behind modern databases,” YouTube, https://www.youtube.com/watch?v=K1a2Bk8NrYQ (accessed Jul. 11, 2024). <p>
-[6] “10.2 b trees and B+ trees. how they are useful in databases,” YouTube, https://www.youtube.com/watch?v=aZjYr87r1b8 (accessed Jul. 11, 2024). <p>
-[7] “B-trees,” B-Tree Visualization, https://www.cs.usfca.edu/~galles/visualization/BTree.html (accessed Jul. 11, 2024). <p>
+This project turns the abstract theory of **B-Trees** into a **hands-on, interactive system** for data management.  
+It demonstrates not just how B-Trees work—but how they *feel* to use: balanced, efficient, and scalable.
+
+> “From algorithm theory to visualization — a complete learning cycle for modern data structures.”
+
+---
+
+🌟 **If you find this project useful, please give it a star on GitHub!**
 
