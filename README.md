@@ -154,19 +154,6 @@ Course: **CS 5800 – Algorithms** (Summer 2024)
 
 ---
 
-## 🌟 Citation  
-
-```
-@report{he2024btree,
-  title={Efficient Data Management with B-Trees: A Mini-Database Implementation},
-  author={Siyun He and Bo Pang and Jin Zhang},
-  year={2024},
-  institution={Northeastern University, Vancouver}
-}
-```
-
----
-
 ## 💬 Acknowledgments  
 
 - [GeeksforGeeks: B-Tree Tutorials](https://www.geeksforgeeks.org/introduction-of-b-tree-2/)  
